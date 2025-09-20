@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/drive_manager/gh-pages/static/css/main.e6c13ad2.css",
-    "main.js": "/drive_manager/gh-pages/static/js/main.3aa7aea0.js",
-    "static/js/453.b00c3c42.chunk.js": "/drive_manager/gh-pages/static/js/453.b00c3c42.chunk.js",
-    "index.html": "/drive_manager/gh-pages/index.html",
-    "main.e6c13ad2.css.map": "/drive_manager/gh-pages/static/css/main.e6c13ad2.css.map",
-    "main.3aa7aea0.js.map": "/drive_manager/gh-pages/static/js/main.3aa7aea0.js.map",
-    "453.b00c3c42.chunk.js.map": "/drive_manager/gh-pages/static/js/453.b00c3c42.chunk.js.map"
+    "main.css": "/drive_manager/static/css/main.e6c13ad2.css",
+    "main.js": "/drive_manager/static/js/main.c1ec4683.js",
+    "static/js/453.b00c3c42.chunk.js": "/drive_manager/static/js/453.b00c3c42.chunk.js",
+    "index.html": "/drive_manager/index.html",
+    "main.e6c13ad2.css.map": "/drive_manager/static/css/main.e6c13ad2.css.map",
+    "main.c1ec4683.js.map": "/drive_manager/static/js/main.c1ec4683.js.map",
+    "453.b00c3c42.chunk.js.map": "/drive_manager/static/js/453.b00c3c42.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.3aa7aea0.js"
+    "static/js/main.c1ec4683.js"
   ]
 }
