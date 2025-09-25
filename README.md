@@ -1,6 +1,23 @@
-# Getting Started with Create React App
+# Star Directory App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Setup and Run Locally
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file in the root directory and add your Google Drive API credentials:
+   ```
+   REACT_APP_GOOGLE_CLIENT_ID=your_client_id_here
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+   The app will open in your browser at [http://localhost:3000](http://localhost:3000)
 
 ## Available Scripts
 
@@ -68,3 +85,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Features
+- Google Drive Integration
+- Star Directory Management
+- Local Data Persistence
+- Responsive Photo Grid Layout
