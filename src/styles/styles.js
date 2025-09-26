@@ -296,48 +296,50 @@ const styles = `
     font-size: 14px;
   }
 
-  @media (max-width: 768px) {
-    .control-container {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .sign-out-container {
-      margin-left: 0;
-      width: 100%;
-    }
-    
-    .stars-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .star-details {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  @media (max-width: 480px) {
-    .stars-grid {
-      grid-template-columns: 1fr;
-    }
+  .back-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
   }
 
-  @media (max-width: 1200px) {
-    .stars-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  .star-details-content {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
   }
 
-  @media (max-width: 900px) {
-    .stars-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .star-image {
+    flex: 0 0 400px;
   }
 
-  @media (max-width: 600px) {
-    .stars-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .star-manager {
-      padding: 20px;
-    }
+  .star-image img {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .star-info-detailed {
+    flex: 1;
+  }
+
+  .star-info-detailed h1 {
+    margin: 0 0 20px;
+    color: #333;
+  }
+
+  .star-info-detailed p {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #666;
   }
 
   .home-container {
@@ -515,6 +517,72 @@ const styles = `
     text-align: center;
     padding: 30px;
     color: #5f6368;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    font-size: 1.2rem;
+    color: #666;
+  }
+
+  .fetch-btn {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .fetch-btn:hover {
+    background-color: #357ae8;
+  }
+
+  .home-btn {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .home-btn:hover {
+    background-color: #357ae8;
+  }
+
+  .edit-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  .edit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .edit-btn {
+    background-color: #fbbc04;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .edit-btn:hover {
+    background-color: #f9ab00;
   }
 
   @media (max-width: 768px) {

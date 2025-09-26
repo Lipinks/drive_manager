@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as starService from '../../services/starService';
 
-const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => {
-  const [stars, setStars] = useState(() => {
-    const savedStars = localStorage.getItem('stars');
-    return savedStars ? JSON.parse(savedStars) : [];
-  });
+const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onStarsUpdate, stars }) => {
+  const navigate = useNavigate();
   
   const [newStar, setNewStar] = useState({
     Name: '',
@@ -13,12 +11,6 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => 
     Country: '',
     Image_Link: ''
   });
-
-  useEffect(() => {
-    if (accessToken) {
-      loadStars();
-    }
-  }, [accessToken]);
 
   useEffect(() => {
     const handleSync = async () => {
@@ -38,12 +30,6 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => 
     }
   }, [accessToken, stars, onSyncChange]);
 
-  const loadStars = async () => {
-    const starData = await starService.getStarFile(accessToken);
-    setStars(starData);
-    localStorage.setItem('stars', JSON.stringify(starData));
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStar(prev => ({
@@ -58,8 +44,7 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => 
       return;
     }
     const newStars = [...stars, newStar];
-    setStars(newStars);
-    localStorage.setItem('stars', JSON.stringify(newStars));
+    onStarsUpdate(newStars);
     setNewStar({
       Name: '',
       Age: '',
@@ -86,10 +71,13 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => 
     
     if (isConfirmed) {
       const newStars = stars.filter((_, i) => i !== index);
-      setStars(newStars);
-      localStorage.setItem('stars', JSON.stringify(newStars));
+      onStarsUpdate(newStars);
       onSyncChange(true);
     }
+  };
+
+  const handleImageClick = (star) => {
+    navigate(`/star/${star.Name.toLowerCase()}`);
   };
 
   return (
@@ -138,7 +126,12 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange }) => 
         {stars.map((star, index) => (
           <div key={index} className="star-frame">
             <div className="image-container">
-              <img src={star.Image_Link} alt={star.Name} />
+              <img 
+                src={star.Image_Link} 
+                alt={star.Name} 
+                onClick={() => handleImageClick(star)}
+                style={{ cursor: 'pointer' }}
+              />
               <button 
                 onClick={() => handleDelete(index)} 
                 className="delete-star-btn"
