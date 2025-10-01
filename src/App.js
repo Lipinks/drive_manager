@@ -4,6 +4,7 @@ import { useDriveAuth } from './hooks/useDriveAuth';
 import StarManager from './components/StarManager/StarManager';
 import StarDetails from './components/StarDetails/StarDetails';
 import Header from './components/Header/Header';
+import InstaPage from './components/InstaPage/InstaPage';
 import styles from './styles/styles';
 import * as starService from './services/starService';
 
@@ -106,6 +107,7 @@ const GoogleDriveApp = () => {
                 }}
               />
             } />
+            <Route path="/insta" element={<InstaPage />} />
           </Routes>
         )}
       </div>

@@ -4,13 +4,24 @@ import * as starService from '../../services/starService';
 
 const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onStarsUpdate, stars }) => {
   const navigate = useNavigate();
-  
+
   const [newStar, setNewStar] = useState({
     Name: '',
     Age: '',
     Country: '',
-    Image_Link: ''
+    Image_Link: '',
+    Tags: []
   });
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState('');
+
+  useEffect(() => {
+    const savedTags = JSON.parse(localStorage.getItem('tags')) || [];
+    if (!savedTags.length) {
+      localStorage.setItem('tags', JSON.stringify([]));
+    }
+    setTags(savedTags);
+  }, []);
 
   useEffect(() => {
     const handleSync = async () => {
@@ -38,6 +49,45 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
     }));
   };
 
+  const handleAddTagToStar = (tag) => {
+    if (tag && !newStar.Tags.includes(tag)) {
+      setNewStar(prev => ({
+        ...prev,
+        Tags: [...prev.Tags, tag]
+      }));
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setNewStar(prev => ({
+      ...prev,
+      Tags: prev.Tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const handleCreateNewTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      const trimmedTag = newTag.trim();
+      const updatedTags = [...tags, trimmedTag];
+      setTags(updatedTags);
+      localStorage.setItem('tags', JSON.stringify(updatedTags));
+      
+      // Automatically add the newly created tag to the star
+      setNewStar(prev => ({
+        ...prev,
+        Tags: [...prev.Tags, trimmedTag]
+      }));
+      
+      setNewTag('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleCreateNewTag();
+    }
+  };
+
   const handleSave = () => {
     if (!newStar.Name || !newStar.Age || !newStar.Country || !newStar.Image_Link) {
       alert('Please fill all fields');
@@ -49,7 +99,8 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
       Name: '',
       Age: '',
       Country: '',
-      Image_Link: ''
+      Image_Link: '',
+      Tags: []
     });
     onSyncChange(true);
     onCloseModal();
@@ -114,6 +165,55 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
               value={newStar.Image_Link}
               onChange={handleInputChange}
             />
+            
+            <div className="tag-section">
+              <h3>Selected Tags</h3>
+              <div className="selected-tags">
+                {newStar.Tags.map(tag => (
+                  <span 
+                    key={tag} 
+                    className="tag selected-tag"
+                    onClick={() => handleRemoveTag(tag)}
+                    title="Click to remove"
+                  >
+                    {tag}
+                    <span className="remove-icon">×</span>
+                  </span>
+                ))}
+              </div>
+              
+              <h3>Available Tags</h3>
+              <div className="available-tags">
+                {tags
+                  .filter(tag => !newStar.Tags.includes(tag))
+                  .map(tag => (
+                    <span 
+                      key={tag} 
+                      className="tag available-tag"
+                      onClick={() => handleAddTagToStar(tag)}
+                      title="Click to add"
+                    >
+                      {tag}
+                      <span className="add-icon">+</span>
+                    </span>
+                  ))}
+              </div>
+              
+              <div className="create-new-tag">
+                <input
+                  type="text"
+                  placeholder="Create new tag"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="new-tag-input"
+                />
+                <button onClick={handleCreateNewTag} className="create-tag-btn">
+                  Create Tag
+                </button>
+              </div>
+            </div>
+            
             <div className="modal-buttons">
               <button onClick={handleSave} className="save-btn">Save</button>
               <button onClick={onCloseModal} className="cancel-btn">Cancel</button>

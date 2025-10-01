@@ -30,8 +30,9 @@ const StarDetails = ({ stars, onStarsUpdate }) => {
     const updatedStars = [...stars];
     updatedStars[starIndex] = editedStar;
     onStarsUpdate(updatedStars);
+    localStorage.setItem('stars', JSON.stringify(updatedStars));
     setIsEditing(false);
-    
+
     // Only navigate to home if the name was changed
     if (editedStar.Name.toLowerCase() !== star.Name.toLowerCase()) {
       navigate('/');
@@ -101,3 +102,4 @@ const StarDetails = ({ stars, onStarsUpdate }) => {
 };
 
 export default StarDetails;
+                
