@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/drive_manager/static/js/main.9e8c6d8e.js",
+    "main.js": "/drive_manager/static/js/main.4259abb1.js",
     "static/js/453.b00c3c42.chunk.js": "/drive_manager/static/js/453.b00c3c42.chunk.js",
     "index.html": "/drive_manager/index.html",
-    "main.9e8c6d8e.js.map": "/drive_manager/static/js/main.9e8c6d8e.js.map",
+    "main.4259abb1.js.map": "/drive_manager/static/js/main.4259abb1.js.map",
     "453.b00c3c42.chunk.js.map": "/drive_manager/static/js/453.b00c3c42.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.9e8c6d8e.js"
+    "static/js/main.4259abb1.js"
   ]
 }
