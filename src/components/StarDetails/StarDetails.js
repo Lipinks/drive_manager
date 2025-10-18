@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './StarDetails.css';
+import AddFavDialog from './AddFavDialog/AddFavDialog';
+import StarHeader from './StarHeader/StarHeader';
+import EditStarDialog from './EditStarDialog/EditStarDialog';
+import FavoritesGrid from './FavoritesGrid/FavoritesGrid';
 
 const StarDetails = ({ stars = [], onStarsUpdate, onSyncChange }) => {
   const { starName } = useParams();
@@ -258,205 +263,42 @@ const StarDetails = ({ stars = [], onStarsUpdate, onSyncChange }) => {
 
   return (
     <div className="star-details">
-      <div className="star-header">
-        <div className="star-main-info">
-          <div className="star-image-container">
-            <img src={star.Image_Link} alt={star.Name} />
-          </div>
-          <div className="star-text-info">
-            <h1>{star.Name}</h1>
-            <p className="age">Age: {star.Age} years</p>
-            <p className="country">Country: {star.Country}</p>
-            <div className="tags-list">
-              <strong>Tags:</strong>
-              {star.Tags.length === 0 ? (
-                <span className="no-tags"> No tags</span>
-              ) : (
-                <ul>
-                  {star.Tags.map((t, i) => (
-                    <li key={i} className="tag-item">
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="button-group">
-          <button className="add-favorite-btn" onClick={() => setShowFavModal(true)}>
-            Add Favorite
-          </button>
-          <button className="add-favorite-btn" onClick={() => setShowEditModal(true)}>
-            Edit Star
-          </button>
-        </div>
-      </div>
 
-      <div className="favorites-grid">
-        {favorites.map((fav) => (
-          <div key={fav.id} className="favorite-card">
-            {editingFav?.id === fav.id ? (
-              <div className="edit-favorite-form">
-                <input
-                  type="text"
-                  value={editingFav.name}
-                  onChange={(e) => setEditingFav({ ...editingFav, name: e.target.value })}
-                  placeholder="Name"
-                />
-                <input
-                  type="url"
-                  value={editingFav.imageUrl}
-                  onChange={(e) => setEditingFav({ ...editingFav, imageUrl: e.target.value })}
-                  placeholder="Image URL"
-                />
-                <input
-                  type="url"
-                  value={editingFav.url}
-                  onChange={(e) => setEditingFav({ ...editingFav, url: e.target.value })}
-                  placeholder="URL"
-                />
-                <div className="edit-buttons">
-                  <button onClick={() => handleEditFavorite(editingFav)}>Save</button>
-                  <button onClick={() => setEditingFav(null)}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <img src={fav.imageUrl} alt={fav.name} />
-                <h3>{fav.name}</h3>
-                {fav.url && (
-                  <a href={fav.url} target="_blank" rel="noopener noreferrer">
-                    Visit
-                  </a>
-                )}
-                <div className="favorite-actions">
-                  <button onClick={() => setEditingFav(fav)}>Edit</button>
-                  <button onClick={() => handleDeleteFavorite(fav.id)}>Delete</button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
-      </div>
+      <StarHeader 
+        star={star}
+        setShowEditModal={setShowEditModal}
+        setShowFavModal={setShowFavModal} />
+
+      <FavoritesGrid
+        favorites={favorites}
+        editingFav={editingFav}
+        setEditingFav={setEditingFav}
+        handleEditFavorite={handleEditFavorite}
+        handleDeleteFavorite={handleDeleteFavorite}
+      />
 
       {showEditModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Edit Star</h2>
-            <input
-              type="text"
-              name="Name"
-              placeholder="Name"
-              value={editedStar.Name}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="Age"
-              placeholder="Age"
-              value={editedStar.Age}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="Country"
-              placeholder="Country"
-              value={editedStar.Country}
-              onChange={handleInputChange}
-            />
-            <input
-              type="url"
-              name="Image_Link"
-              placeholder="Image URL"
-              value={editedStar.Image_Link}
-              onChange={handleInputChange}
-            />
-
-            <div className="tag-section">
-              <h3>Selected Tags</h3>
-              <div className="selected-tags">
-                {(editedStar.Tags || []).map(tag => (
-                  <span 
-                    key={tag} 
-                    className="tag selected-tag"
-                    onClick={() => handleRemoveTagFromStar(tag)}
-                    title="Click to remove"
-                  >
-                    {tag}
-                    <span className="remove-icon">×</span>
-                  </span>
-                ))}
-              </div>
-              
-              <h3>Available Tags</h3>
-              <div className="available-tags">
-                {availableTags
-                  .filter(tag => !(editedStar.Tags || []).includes(tag))
-                  .map(tag => (
-                    <span 
-                      key={tag} 
-                      className="tag available-tag"
-                      onClick={() => handleAddTagToStar(tag)}
-                      title="Click to add"
-                    >
-                      {tag}
-                      <span className="add-icon">+</span>
-                    </span>
-                  ))}
-              </div>
-              
-              <div className="create-new-tag">
-                <input
-                  type="text"
-                  placeholder="Create new tag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="new-tag-input"
-                />
-                <button onClick={handleCreateNewTag} className="create-tag-btn">
-                  Create Tag
-                </button>
-              </div>
-            </div>
-
-            <div className="modal-buttons">
-              <button onClick={handleEditSave} className="save-btn">Save</button>
-              <button onClick={() => setShowEditModal(false)} className="cancel-btn">Cancel</button>
-            </div>
-          </div>
-        </div>
+        <EditStarDialog 
+          editedStar={editedStar} 
+          handleInputChange={handleInputChange} 
+          handleEditSave={handleEditSave} 
+          setShowEditModal={setShowEditModal} 
+          handleAddTagToStar={handleAddTagToStar}
+          handleRemoveTagFromStar={handleRemoveTagFromStar}
+          availableTags={availableTags}
+          newTag={newTag}
+          setNewTag={setNewTag}
+          handleCreateNewTag={handleCreateNewTag}
+          handleKeyPress={handleKeyPress}
+        />
       )}
 
       {showFavModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Add New Favorite</h2>
-            <input
-              type="text"
-              placeholder="Name"
-              value={newFavorite.name}
-              onChange={(e) => setNewFavorite({ ...newFavorite, name: e.target.value })}
-            />
-            <input
-              type="url"
-              placeholder="Image URL"
-              value={newFavorite.imageUrl}
-              onChange={(e) => setNewFavorite({ ...newFavorite, imageUrl: e.target.value })}
-            />
-            <input
-              type="url"
-              placeholder="URL (optional)"
-              value={newFavorite.url}
-              onChange={(e) => setNewFavorite({ ...newFavorite, url: e.target.value })}
-            />
-            <div className="modal-buttons">
-              <button onClick={handleAddFavorite} className="save-btn">Save</button>
-              <button onClick={() => setShowFavModal(false)} className="cancel-btn">Cancel</button>
-            </div>
-          </div>
-        </div>
+        <AddFavDialog 
+          newFavorite={newFavorite} 
+          setNewFavorite={setNewFavorite} 
+          handleAddFavorite={handleAddFavorite} 
+          setShowFavModal={setShowFavModal} />
       )}
     </div>
   );
