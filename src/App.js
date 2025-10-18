@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useDriveAuth } from './hooks/useDriveAuth';
 import StarManager from './components/StarManager/StarManager';
@@ -7,8 +7,10 @@ import Header from './components/Header/Header';
 import InstaPage from './components/InstaPage/InstaPage';
 import styles from './styles/styles';
 import * as starService from './services/starService';
+import LoginPage from './components/LoginPage/LoginPage';
+import './App.css';
 
-const GoogleDriveApp = () => {
+const BigAndBingApp = () => {
   const { accessToken, handleDriveAuth: handleAuth, signOut: handleSignOut } = useDriveAuth();
   const [showAddStar, setShowAddStar] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -39,7 +41,7 @@ const GoogleDriveApp = () => {
   const handleFetchData = async () => {
     setIsLoading(true);
     try {
-      const starData = await starService.getStarFile(accessToken);
+      const starData = await starService.fetchStarFile(accessToken);
       setStars(starData);
       localStorage.setItem('stars', JSON.stringify(starData));
     } catch (error) {
@@ -57,30 +59,33 @@ const GoogleDriveApp = () => {
     }
   };
 
+  const handleSync = async () => {
+    try {
+      const element = document.querySelector('.star-manager');
+      if (element) {
+        element.dispatchEvent(new Event('syncToDrive'));
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      alert('Failed to sync with Drive');
+    }
+  };
+
   if (!accessToken) {
-    return (
-      <div className="home-container">
-        <h1>Google Drive Integration</h1>
-        <button onClick={handleAuth} className="signin-btn">
-          Sign in with Google
-        </button>
-      </div>
-    );
+    return <LoginPage handleAuth={handleAuth} />;
   }
 
   return (
     <HashRouter>
       <div>
         <Header 
-          onAddStar={() => setShowAddStar(true)}
-          onSignOut={handleSignOut}
-          onFetchData={handleFetchData}
-          onSync={() => {
-            const starManagerRef = document.querySelector('.star-manager');
-            if (starManagerRef) {
-              starManagerRef.dispatchEvent(new CustomEvent('syncToDrive'));
-            }
+          onAddStar={() => {
+            console.log('onAddStar called');
+            setShowAddStar(true);
           }}
+          onSignOut={handleSignOut}
+          onSync={handleSync}
+          onFetchData={handleFetchData}
           showSync={hasChanges}
         />
         {isLoading ? (
@@ -105,6 +110,7 @@ const GoogleDriveApp = () => {
                   handleStarsUpdate(newStars);
                   setHasChanges(true);
                 }}
+                onSyncChange={setHasChanges} // Pass onSyncChange to StarDetails
               />
             } />
             <Route path="/insta" element={<InstaPage />} />
@@ -123,4 +129,4 @@ if (!document.getElementById('app-styles')) {
   document.head.appendChild(styleSheet);
 }
 
-export default GoogleDriveApp;
+export default BigAndBingApp;

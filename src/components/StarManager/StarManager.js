@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as starService from '../../services/starService';
+import './StarManager.css';
+import AddStarDialog from './AddStarDialog/AddStarDialog';
 
 const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onStarsUpdate, stars }) => {
   const navigate = useNavigate();
+  // Ensure stars is always an array
+  const [displayStars, setDisplayStars] = useState([]);
+
+  useEffect(() => {
+    // Convert stars to array if it's not already
+    setDisplayStars(Array.isArray(stars) ? stars : []);
+  }, [stars]);
 
   const [newStar, setNewStar] = useState({
     Name: '',
@@ -26,7 +35,9 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
   useEffect(() => {
     const handleSync = async () => {
       try {
-        await starService.saveStarFile(accessToken, stars);
+        // Save current data to localStorage before sync
+        localStorage.setItem('stars', JSON.stringify(Array.isArray(stars) ? stars : []));
+        await starService.saveStarFile(accessToken);
         onSyncChange(false);
       } catch (error) {
         console.error('Error syncing:', error);
@@ -34,6 +45,7 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
       }
     };
 
+    // Listen for sync event
     const element = document.querySelector('.star-manager');
     if (element) {
       element.addEventListener('syncToDrive', handleSync);
@@ -88,13 +100,42 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
     }
   };
 
+  const handleSync = async () => {
+    try {
+      // Save current data to localStorage before sync
+      localStorage.setItem('stars', JSON.stringify(Array.isArray(stars) ? stars : []));
+      await starService.saveStarFile(accessToken);
+      onSyncChange(false);
+    } catch (error) {
+      console.error('Error syncing:', error);
+      alert('Failed to sync with Drive');
+    }
+  };
+
+  const handleFetch = async () => {
+    try {
+      const data = await starService.fetchStarFile(accessToken);
+      onStarsUpdate(data.stars);
+      setTags(data.tags);
+    } catch (error) {
+      console.error('Error fetching:', error);
+      alert('Failed to fetch from Drive');
+    }
+  };
+
   const handleSave = () => {
     if (!newStar.Name || !newStar.Age || !newStar.Country || !newStar.Image_Link) {
       alert('Please fill all fields');
       return;
     }
-    const newStars = [...stars, newStar];
-    onStarsUpdate(newStars);
+
+    const updatedStars = [...(Array.isArray(stars) ? stars : []), newStar];
+    
+    // Update localStorage and state
+    localStorage.setItem('stars', JSON.stringify(updatedStars));
+    onStarsUpdate(updatedStars);
+    
+    // Reset form
     setNewStar({
       Name: '',
       Age: '',
@@ -102,18 +143,10 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
       Image_Link: '',
       Tags: []
     });
+
+    // Trigger sync
     onSyncChange(true);
     onCloseModal();
-  };
-
-  const handleSync = async () => {
-    try {
-      await starService.saveStarFile(accessToken, stars);
-      onSyncChange(false);
-    } catch (error) {
-      console.error('Error syncing:', error);
-      alert('Failed to sync with Drive');
-    }
   };
 
   const handleDelete = (index) => {
@@ -133,97 +166,25 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
 
   return (
     <div className="star-manager">
+      {console.log('showModal:', showModal)}
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Add New Star</h2>
-            <input
-              type="text"
-              name="Name"
-              placeholder="Name"
-              value={newStar.Name}
-              onChange={handleInputChange}
-            />
-            <input
-              type="number"
-              name="Age"
-              placeholder="Age"
-              value={newStar.Age}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="Country"
-              placeholder="Country"
-              value={newStar.Country}
-              onChange={handleInputChange}
-            />
-            <input
-              type="url"
-              name="Image_Link"
-              placeholder="Image Link"
-              value={newStar.Image_Link}
-              onChange={handleInputChange}
-            />
-            
-            <div className="tag-section">
-              <h3>Selected Tags</h3>
-              <div className="selected-tags">
-                {newStar.Tags.map(tag => (
-                  <span 
-                    key={tag} 
-                    className="tag selected-tag"
-                    onClick={() => handleRemoveTag(tag)}
-                    title="Click to remove"
-                  >
-                    {tag}
-                    <span className="remove-icon">×</span>
-                  </span>
-                ))}
-              </div>
-              
-              <h3>Available Tags</h3>
-              <div className="available-tags">
-                {tags
-                  .filter(tag => !newStar.Tags.includes(tag))
-                  .map(tag => (
-                    <span 
-                      key={tag} 
-                      className="tag available-tag"
-                      onClick={() => handleAddTagToStar(tag)}
-                      title="Click to add"
-                    >
-                      {tag}
-                      <span className="add-icon">+</span>
-                    </span>
-                  ))}
-              </div>
-              
-              <div className="create-new-tag">
-                <input
-                  type="text"
-                  placeholder="Create new tag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="new-tag-input"
-                />
-                <button onClick={handleCreateNewTag} className="create-tag-btn">
-                  Create Tag
-                </button>
-              </div>
-            </div>
-            
-            <div className="modal-buttons">
-              <button onClick={handleSave} className="save-btn">Save</button>
-              <button onClick={onCloseModal} className="cancel-btn">Cancel</button>
-            </div>
-          </div>
-        </div>
+        <AddStarDialog 
+          newStar={newStar}
+          handleInputChange={handleInputChange}
+          handleAddTagToStar={handleAddTagToStar}
+          handleRemoveTag={handleRemoveTag}
+          handleCreateNewTag={handleCreateNewTag}
+          handleKeyPress={handleKeyPress}
+          onCloseModal={onCloseModal}
+          handleSave={handleSave}
+          tags={tags}
+          newTag={newTag}
+          setNewTag={setNewTag} 
+        />
       )}
 
       <div className="stars-grid">
-        {stars.map((star, index) => (
+        {displayStars.map((star, index) => (
           <div key={index} className="star-frame">
             <div className="image-container">
               <img 
