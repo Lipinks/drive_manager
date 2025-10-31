@@ -1,9 +1,8 @@
 .videos-page {
   display: flex;
   padding: 20px;
-  padding-top: 80px; /* Add space for fixed header */
+  padding-top: 100px; /* Add top padding to account for fixed header */
   min-height: 100vh;
-  /* box-sizing: border-box; */
 }
 
 .videos-page h1 {
@@ -204,7 +203,7 @@
 @media (max-width: 768px) {
   .videos-page {
     padding: 15px;
-    padding-top: 75px; /* Adjust for smaller screens */
+    padding-top: 90px; /* Adjust for smaller screens */
   }
 
   .videos-page h1 {
@@ -232,7 +231,7 @@
 
 @media (max-width: 480px) {
   .videos-page {
-    padding-top: 70px; /* Further adjust for mobile */
+    padding-top: 80px; /* Further adjust for mobile */
   }
 
   .favorites-grid {

@@ -148,7 +148,7 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
   };
 
   return (
-    <div className="star-manager" style={{ paddingTop: '80px' }}>
+    <div className="star-manager">
       {console.log('showModal:', showModal)}
       {showModal && (
         <AddStarDialog 
