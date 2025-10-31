@@ -5,10 +5,12 @@ import StarManager from './components/StarManager/StarManager';
 import StarDetails from './components/StarDetails/StarDetails';
 import Header from './components/Header/Header';
 import InstaPage from './components/InstaPage/InstaPage';
+import VideosPage from './components/VideosPage/VideosPage';
 import styles from './styles/styles';
 import * as starService from './services/starService';
 import LoginPage from './components/LoginPage/LoginPage';
 import './App.css';
+import LoadingPage from './components/LoadingPage/LoadingPage';
 
 const BigAndBingApp = () => {
   const { accessToken, handleDriveAuth: handleAuth, signOut: handleSignOut } = useDriveAuth();
@@ -60,14 +62,29 @@ const BigAndBingApp = () => {
   };
 
   const handleSync = async () => {
+    setIsLoading(true);
     try {
       const element = document.querySelector('.star-manager');
       if (element) {
+        // Listen for sync completion
+        const handleSyncComplete = () => {
+          setIsLoading(false);
+          element.removeEventListener('syncComplete', handleSyncComplete);
+        };
+        
+        element.addEventListener('syncComplete', handleSyncComplete);
         element.dispatchEvent(new Event('syncToDrive'));
+        
+        // Fallback timeout in case sync complete event doesn't fire
+        setTimeout(() => {
+          setIsLoading(false);
+          element.removeEventListener('syncComplete', handleSyncComplete);
+        }, 5000);
       }
     } catch (error) {
       console.error('Sync error:', error);
       alert('Failed to sync with Drive');
+      setIsLoading(false);
     }
   };
 
@@ -89,7 +106,7 @@ const BigAndBingApp = () => {
           showSync={hasChanges}
         />
         {isLoading ? (
-          <div className="loading">Loading...</div>
+          <LoadingPage />
         ) : (
           <Routes>
             <Route path="/" element={
@@ -114,6 +131,7 @@ const BigAndBingApp = () => {
               />
             } />
             <Route path="/insta" element={<InstaPage />} />
+            <Route path="/videos" element={<VideosPage />} />
           </Routes>
         )}
       </div>

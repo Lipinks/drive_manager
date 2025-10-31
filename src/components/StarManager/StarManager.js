@@ -39,6 +39,12 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
         localStorage.setItem('stars', JSON.stringify(Array.isArray(stars) ? stars : []));
         await starService.saveStarFile(accessToken);
         onSyncChange(false);
+        
+        // Dispatch a custom event to signal sync completion
+        const element = document.querySelector('.star-manager');
+        if (element) {
+          element.dispatchEvent(new CustomEvent('syncComplete'));
+        }
       } catch (error) {
         console.error('Error syncing:', error);
         alert('Failed to sync with Drive');
@@ -100,29 +106,6 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
     }
   };
 
-  const handleSync = async () => {
-    try {
-      // Save current data to localStorage before sync
-      localStorage.setItem('stars', JSON.stringify(Array.isArray(stars) ? stars : []));
-      await starService.saveStarFile(accessToken);
-      onSyncChange(false);
-    } catch (error) {
-      console.error('Error syncing:', error);
-      alert('Failed to sync with Drive');
-    }
-  };
-
-  const handleFetch = async () => {
-    try {
-      const data = await starService.fetchStarFile(accessToken);
-      onStarsUpdate(data.stars);
-      setTags(data.tags);
-    } catch (error) {
-      console.error('Error fetching:', error);
-      alert('Failed to fetch from Drive');
-    }
-  };
-
   const handleSave = () => {
     if (!newStar.Name || !newStar.Age || !newStar.Country || !newStar.Image_Link) {
       alert('Please fill all fields');
@@ -165,7 +148,7 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
   };
 
   return (
-    <div className="star-manager">
+    <div className="star-manager" style={{ paddingTop: '80px' }}>
       {console.log('showModal:', showModal)}
       {showModal && (
         <AddStarDialog 

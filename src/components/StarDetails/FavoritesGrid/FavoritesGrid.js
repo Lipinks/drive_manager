@@ -1,3 +1,4 @@
+import React from 'react';
 import './FavoritesGrid.css';
 import EditFavDialog from './EditFavDialog/EditFavDialog';
 
@@ -17,12 +18,12 @@ const FavoritesGrid = ({ favorites = [], editingFav, setEditingFav, handleEditFa
               <h3>{fav.name}</h3>
               {fav.url && (
                 <a href={fav.url} target="_blank" rel="noopener noreferrer">
-                  Visit
+                  Play the video
                 </a>
               )}
               <div className="favorite-actions">
-                <button onClick={() => setEditingFav(fav)}>Edit</button>
-                <button onClick={() => handleDeleteFavorite(fav.id)}>Delete</button>
+                <button onClick={() => setEditingFav(fav)} className='edit-btn'>Edit</button>
+                <button onClick={() => handleDeleteFavorite(fav.id)} className='edit-btn'>Delete</button>
               </div>
             </>
           )}
