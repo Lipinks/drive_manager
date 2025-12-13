@@ -19,7 +19,8 @@
     z-index: 1000;
     background-color: #FFD700; /* Golden background */
     color: #000; /* Black text for contrast */
-    padding: 10px 20px;
+    padding: 5px 5px;
+    padding-right: 200px;
     display: flex;
     justify-content: space-between;
     align-items: center;

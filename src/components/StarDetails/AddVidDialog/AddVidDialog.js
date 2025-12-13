@@ -1,6 +1,6 @@
-import './AddFavDialog.css';
+import './AddVidDialog.css';
 
-const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShowFavModal }) => {
+const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShowVidAddModal }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -25,7 +25,7 @@ const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShow
         />
         <div className="modal-buttons">
           <button onClick={handleAddFavorite} className="save-btn">Save</button>
-          <button onClick={() => setShowFavModal(false)} className="cancel-btn">Cancel</button>
+          <button onClick={() => setShowVidAddModal(false)} className="cancel-btn">Cancel</button>
         </div>
       </div>
     </div>

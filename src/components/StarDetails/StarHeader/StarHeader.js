@@ -1,6 +1,6 @@
 import './StarHeader.css';
 
-const StarHeader = ({ star, setShowEditModal, setShowFavModal }) => {
+const StarHeader = ({ star, setShowVidEditModal, setShowVidAddModal }) => {
   return (
     <div className="star-header">
       <div className="star-main-info">
@@ -9,8 +9,6 @@ const StarHeader = ({ star, setShowEditModal, setShowFavModal }) => {
         </div>
         <div className="star-text-info">
           <h1>{star.Name}</h1>
-          <p className="age">Age: {star.Age} years</p>
-          <p className="country">Country: {star.Country}</p>
           <div className="tags-list">
             <strong>Tags:</strong>
             {star.Tags.length === 0 ? (
@@ -28,10 +26,10 @@ const StarHeader = ({ star, setShowEditModal, setShowFavModal }) => {
         </div>
       </div>
       <div className="button-group">
-        <button className="add-favorite-btn" onClick={() => setShowFavModal(true)}>
+        <button className="add-favorite-btn" onClick={() => setShowVidAddModal(true)}>
           Add Favorite
         </button>
-        <button className="add-favorite-btn" onClick={() => setShowEditModal(true)}>
+        <button className="add-favorite-btn" onClick={() => setShowVidEditModal(true)}>
           Edit Star
         </button>
       </div>

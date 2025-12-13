@@ -1,66 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as starService from '../../services/starService';
-import './StarManager.css';
 import AddStarDialog from './AddStarDialog/AddStarDialog';
+import './StarManager.css';
 
-const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onStarsUpdate, stars }) => {
+const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, stars }) => {
+  
   const navigate = useNavigate();
-  // Ensure stars is always an array
-  const [displayStars, setDisplayStars] = useState([]);
-
-  useEffect(() => {
-    // Convert stars to array if it's not already
-    setDisplayStars(Array.isArray(stars) ? stars : []);
-  }, [stars]);
 
   const [newStar, setNewStar] = useState({
     Name: '',
-    Age: '',
-    Country: '',
     Image_Link: '',
     Tags: []
   });
-  const [tags, setTags] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
   const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
-    const savedTags = JSON.parse(localStorage.getItem('tags')) || [];
-    if (!savedTags.length) {
-      localStorage.setItem('tags', JSON.stringify([]));
-    }
-    setTags(savedTags);
+    setAvailableTags(localStorage.getItem('tags') ? JSON.parse(localStorage.getItem('tags')) : []);
   }, []);
 
-  useEffect(() => {
-    const handleSync = async () => {
-      try {
-        // Save current data to localStorage before sync
-        localStorage.setItem('stars', JSON.stringify(Array.isArray(stars) ? stars : []));
-        await starService.saveStarFile(accessToken);
-        onSyncChange(false);
-        
-        // Dispatch a custom event to signal sync completion
-        const element = document.querySelector('.star-manager');
-        if (element) {
-          element.dispatchEvent(new CustomEvent('syncComplete'));
-        }
-      } catch (error) {
-        console.error('Error syncing:', error);
-        alert('Failed to sync with Drive');
-      }
-    };
-
-    // Listen for sync event
-    const element = document.querySelector('.star-manager');
-    if (element) {
-      element.addEventListener('syncToDrive', handleSync);
-      return () => element.removeEventListener('syncToDrive', handleSync);
-    }
-  }, [accessToken, stars, onSyncChange]);
-
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    var { name, value } = e.target;
     setNewStar(prev => ({
       ...prev,
       [name]: value
@@ -84,13 +44,13 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
   };
 
   const handleCreateNewTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      const trimmedTag = newTag.trim();
-      const updatedTags = [...tags, trimmedTag];
-      setTags(updatedTags);
+    if (newTag.trim() && !availableTags.includes(newTag.trim())) {
+      var trimmedTag = newTag.trim();
+      var updatedTags = [...availableTags, trimmedTag];
+      setAvailableTags(updatedTags);
+      
       localStorage.setItem('tags', JSON.stringify(updatedTags));
       
-      // Automatically add the newly created tag to the star
       setNewStar(prev => ({
         ...prev,
         Tags: [...prev.Tags, trimmedTag]
@@ -112,34 +72,26 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
       return;
     }
 
-    const updatedStars = [...(Array.isArray(stars) ? stars : []), newStar];
+    var updatedStars = [...stars, newStar];
     
-    // Update localStorage and state
-    localStorage.setItem('stars', JSON.stringify(updatedStars));
-    onStarsUpdate(updatedStars);
+    updateStarDetails(updatedStars);
     
-    // Reset form
     setNewStar({
       Name: '',
-      Age: '',
-      Country: '',
       Image_Link: '',
       Tags: []
     });
 
-    // Trigger sync
-    onSyncChange(true);
-    onCloseModal();
+    closeAddStarModal();
   };
 
   const handleDelete = (index) => {
-    const star = stars[index];
-    const isConfirmed = window.confirm(`Are you sure you want to delete ${star.Name}?`);
+    var star = stars[index];
+    var isConfirmed = window.confirm(`Are you sure you want to delete ${star.Name}?`);
     
     if (isConfirmed) {
-      const newStars = stars.filter((_, i) => i !== index);
-      onStarsUpdate(newStars);
-      onSyncChange(true);
+      var newStars = stars.filter((_, i) => i !== index);
+      updateStarDetails(newStars);
     }
   };
 
@@ -149,8 +101,7 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
 
   return (
     <div className="star-manager">
-      {console.log('showModal:', showModal)}
-      {showModal && (
+      {showAddStarModal && (
         <AddStarDialog 
           newStar={newStar}
           handleInputChange={handleInputChange}
@@ -158,16 +109,16 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
           handleRemoveTag={handleRemoveTag}
           handleCreateNewTag={handleCreateNewTag}
           handleKeyPress={handleKeyPress}
-          onCloseModal={onCloseModal}
+          closeAddStarModal={closeAddStarModal}
           handleSave={handleSave}
-          tags={tags}
+          tags={availableTags}
           newTag={newTag}
           setNewTag={setNewTag} 
         />
       )}
 
       <div className="stars-grid">
-        {displayStars.map((star, index) => (
+        {stars.map((star, index) => (
           <div key={index} className="star-frame">
             <div className="image-container">
               <img 
@@ -185,7 +136,6 @@ const StarManager = ({ accessToken, showModal, onCloseModal, onSyncChange, onSta
             </div>
             <div className="star-info">
               <h3>{star.Name}</h3>
-              <p>{star.Age} years • {star.Country}</p>
             </div>
           </div>
         ))}

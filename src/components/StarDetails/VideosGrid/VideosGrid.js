@@ -1,14 +1,13 @@
-import React from 'react';
-import './FavoritesGrid.css';
-import EditFavDialog from './EditFavDialog/EditFavDialog';
+import './VideosGrid.css';
+import EditVidDialog from './EditVidDialog/EditVidDialog';
 
-const FavoritesGrid = ({ favorites = [], editingFav, setEditingFav, handleEditFavorite, handleDeleteFavorite, tags, handleAddTagToFav, handleRemoveTagFromFav, handleCreateNewTag }) => {
+const VideosGrid = ({ favorites = [], editingFav, setEditingFav, handleEditFavorite, handleDeleteFavorite, tags, handleAddTagToFav, handleRemoveTagFromFav, handleCreateNewTag }) => {
   return (
     <div className="favorites-grid">
       {favorites.map((fav) => (
         <div key={fav.id} className="favorite-card">
           {editingFav?.id === fav.id ? (
-            <EditFavDialog 
+            <EditVidDialog 
               editingFav={editingFav}
               handleEditFavorite={handleEditFavorite}
               setEditingFav={setEditingFav}
@@ -20,26 +19,27 @@ const FavoritesGrid = ({ favorites = [], editingFav, setEditingFav, handleEditFa
           ) : (
             <>
               <img src={fav.imageUrl} alt={fav.name} />
-              <h3>{fav.name}</h3>
               {fav.url && (
                 <a href={fav.url} target="_blank" rel="noopener noreferrer">
-                  Play the video
+                  {fav.name}
                 </a>
               )}
               <div className="favorite-tags">
                 {fav.tags && fav.tags.length > 0 && (
-                  <div className="tags-display">
-                    {fav.tags.map((tag, index) => (
-                      <span key={index} className="tag">
-                        {tag}
-                      </span>
-                    ))}
+                  <div >
+                    <select className="tags-dropdown">
+                      <option value="">{`Tags (${fav.tags.length})`}</option>
+                      {fav.tags.map((tag, index) => (
+                        <option key={index} value={tag}>
+                          {tag}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
-              </div>
-              <div className="favorite-actions">
-                <button onClick={() => setEditingFav(fav)} className='edit-btn'>Edit</button>
-                <button onClick={() => handleDeleteFavorite(fav.id)} className='edit-btn'>Delete</button>
+                <button onClick={() => setEditingFav(fav)} >Edit</button>
+                <button onClick={() => handleDeleteFavorite(fav.id)}>Delete</button>
+              
               </div>
             </>
           )}
@@ -49,4 +49,4 @@ const FavoritesGrid = ({ favorites = [], editingFav, setEditingFav, handleEditFa
   );
 }
 
-export default FavoritesGrid;
+export default VideosGrid;

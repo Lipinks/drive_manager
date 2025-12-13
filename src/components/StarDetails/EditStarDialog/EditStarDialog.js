@@ -1,39 +1,27 @@
 import './EditStarDialog.css';
 
-const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowEditModal, handleAddTagToStar, handleRemoveTagFromStar, availableTags, newTag, setNewTag, handleCreateNewTag, handleKeyPress}) => {
+const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowVidEditModal, handleAddTagToStar, handleRemoveTagFromStar, availableTags, newTag, setNewTag, handleCreateNewTag, handleKeyPress}) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Edit Star</h2>
-        <input
-          type="text"
-          name="Name"
-          placeholder="Name"
-          value={editedStar.Name}
-          onChange={handleInputChange}
-          disabled={true}
-        />
-        <input
-          type="text"
-          name="Age"
-          placeholder="Age"
-          value={editedStar.Age}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="Country"
-          placeholder="Country"
-          value={editedStar.Country}
-          onChange={handleInputChange}
-        />
-        <input
-          type="url"
-          name="Image_Link"
-          placeholder="Image URL"
-          value={editedStar.Image_Link}
-          onChange={handleInputChange}
-        />
+        <div className="name-input-section"></div>
+          <div className='add-new-star'>Edit Star</div>
+          <input
+            type="text"
+            name="Name"
+            placeholder="Name"
+            value={editedStar.Name}
+            onChange={handleInputChange}
+            disabled={true}
+          />
+          <input
+            type="url"
+            name="Image_Link"
+            placeholder="Image URL"
+            value={editedStar.Image_Link}
+            onChange={handleInputChange}
+          />
+        </div>
 
         <div className="tag-section">
           <h3>Selected Tags</h3>
@@ -78,17 +66,13 @@ const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowE
               className="new-tag-input"
             />
             <button onClick={handleCreateNewTag} className="create-tag-btn">
-              Create Tag
+              Save Tag
             </button>
+            <button onClick={handleEditSave} className="save-btn">Save</button>
+            <button onClick={() => setShowVidEditModal(false)} className="cancel-btn">Cancel</button>
           </div>
         </div>
-
-        <div className="modal-buttons">
-          <button onClick={handleEditSave} className="save-btn">Save</button>
-          <button onClick={() => setShowEditModal(false)} className="cancel-btn">Cancel</button>
-        </div>
       </div>
-    </div>
   );
 } 
 

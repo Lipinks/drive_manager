@@ -1,38 +1,26 @@
 import './AddStarDialog.css';
 
-const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemoveTag,handleCreateNewTag,handleKeyPress,onCloseModal,handleSave,tags,newTag,setNewTag})=> {
+const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemoveTag,handleCreateNewTag,handleKeyPress,closeAddStarModal,handleSave,tags,newTag,setNewTag})=> {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Add New Star</h2>
-        <input
-          type="text"
-          name="Name"
-          placeholder="Name"
-          value={newStar.Name}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="Age"
-          placeholder="Age"
-          value={newStar.Age}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="Country"
-          placeholder="Country"
-          value={newStar.Country}
-          onChange={handleInputChange}
-        />
-        <input
-          type="url"
-          name="Image_Link"
-          placeholder="Image Link"
-          value={newStar.Image_Link}
-          onChange={handleInputChange}
-        />
+        <div className="name-input-section">
+          <div className='add-new-star'>Add New Star</div>
+          <input
+            type="text"
+            name="Name"
+            placeholder="Name"
+            value={newStar.Name}
+            onChange={handleInputChange}
+          />
+          <input
+            type="url"
+            name="Image_Link"
+            placeholder="Image Link"
+            value={newStar.Image_Link}
+            onChange={handleInputChange}
+          />
+        </div>
         
         <div className="tag-section">
           <h3>Selected Tags</h3>
@@ -77,14 +65,11 @@ const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemov
               className="new-tag-input"
             />
             <button onClick={handleCreateNewTag} className="create-tag-btn">
-              +
+              Save Tag
             </button>
+            <button onClick={handleSave} className="save-btn">Save Star</button>
+            <button onClick={closeAddStarModal} className="cancel-btn">Cancel</button>
           </div>
-        </div>
-        
-        <div className="modal-buttons">
-          <button onClick={handleSave} className="save-btn">Save</button>
-          <button onClick={onCloseModal} className="cancel-btn">Cancel</button>
         </div>
       </div>
     </div>

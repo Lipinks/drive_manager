@@ -3,13 +3,12 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 40px;
+  padding: 5px;
   background: linear-gradient(135deg, #fff9e6 0%, #fef5e7 100%);
   border-radius: 20px;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
     0 2px 8px rgba(218, 165, 32, 0.2);
-  margin-bottom: 30px;
   border: 1px solid rgba(255, 215, 0, 0.3);
   position: relative;
   overflow: hidden;
@@ -47,7 +46,7 @@
 }
 
 .star-image-container {
-  width: 220px;
+  width: 400px;
   height: 220px;
   border-radius: 16px;
   overflow: hidden;
@@ -82,7 +81,7 @@
 .star-image-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 13px;
 }
 

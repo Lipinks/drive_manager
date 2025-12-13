@@ -1,44 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { useDriveAuth } from './hooks/useDriveAuth';
-import StarManager from './components/StarManager/StarManager';
-import StarDetails from './components/StarDetails/StarDetails';
-import Header from './components/Header/Header';
-import InstaPage from './components/InstaPage/InstaPage';
-import VideosPage from './components/VideosPage/VideosPage';
-import styles from './styles/styles';
 import * as starService from './services/starService';
 import LoginPage from './components/LoginPage/LoginPage';
-import './App.css';
 import LoadingPage from './components/LoadingPage/LoadingPage';
+import Header from './components/Header/Header';
+import StarManager from './components/StarManager/StarManager';
+import StarDetails from './components/StarDetails/StarDetails';
+import VideosPage from './components/VideosPage/VideosPage';
+import InstaPage from './components/InstaPage/InstaPage';
+import './App.css';
 
 const BigAndBingApp = () => {
-  const { accessToken, handleDriveAuth: handleAuth, signOut: handleSignOut } = useDriveAuth();
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+  const [tokenClient, setTokenClient] = useState(null);
   const [showAddStar, setShowAddStar] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stars, setStars] = useState(() => {
     const savedStars = localStorage.getItem('stars');
     return savedStars ? JSON.parse(savedStars) : [];
   });
 
-  // Load stars from localStorage on mount
-  // useEffect(() => {
-  //   const loadInitialStars = async () => {
-  //     try {
-  //       const savedStars = localStorage.getItem('stars');
-  //       if (savedStars) {
-  //         setStars(JSON.parse(savedStars));
-  //       }
-  //     } catch (error) {
-  //       console.error('Error loading stars:', error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+  const initTokenClient = useCallback(() => {
+    if (window.google && window.google.accounts) {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: "567189276629-9tkesauoqldd41mnr5gdeh0t2ii67432.apps.googleusercontent.com",
+        scope: "https://www.googleapis.com/auth/drive",
+        callback: handleAuthResponse,
+      });
+      setTokenClient(client);
+    }
+  }, []);
 
-  //   loadInitialStars();
-  // }, []);
+  const handleAuthResponse = (response) => {
+    if (response.error) {
+      console.error("Token error:", response);
+      return;
+    }
+    setAccessToken(response.access_token);
+    localStorage.setItem('accessToken', response.access_token);
+  };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = initTokenClient;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [initTokenClient]);
+
+  const handleDriveAuth = () => {
+    if (tokenClient) {
+      tokenClient.requestAccessToken({ prompt: "consent" });
+    }
+  };
 
   const handleFetchData = async () => {
     setIsLoading(true);
@@ -66,43 +85,26 @@ const BigAndBingApp = () => {
   const handleSync = async () => {
     console.log('Starting sync to Drive...');
     setIsLoading(true);
-    // try {
-    //   const element = document.querySelector('.star-manager');
-    //   if (element) {
-    //     // Listen for sync completion
-    //     const handleSyncComplete = () => {
-    //       setIsLoading(false);
-    //       element.removeEventListener('syncComplete', handleSyncComplete);
-    //     };
-        
-    //     element.addEventListener('syncComplete', handleSyncComplete);
-    //     element.dispatchEvent(new Event('syncToDrive'));
-        
-    //     // Fallback timeout in case sync complete event doesn't fire
-    //     setTimeout(() => {
-    //       setIsLoading(false);
-    //       element.removeEventListener('syncComplete', handleSyncComplete);
-    //     }, 5000);
-    //   }
-    // } catch (error) {
-    //   console.error('Sync error:', error);
-    //   alert('Failed to sync with Drive');
-    //   setIsLoading(false);
-    // }
     try{
-    var accessToken = localStorage.getItem('accessToken');
-    await starService.saveStarFile(accessToken);
+      await starService.saveStarFile(accessToken);
     }catch(error){
       console.error('Sync error:', error);
       alert('Failed to sync with Drive');
-    } finally {
+    }finally {
       setIsLoading(false);
     }
+  };
 
+  const signOut = () => {
+    if (window.google && window.google.accounts) {
+      window.google.accounts.id.disableAutoSelect();
+    }
+    setAccessToken(null);
+    localStorage.removeItem('accessToken');
   };
 
   if (!accessToken) {
-    return <LoginPage handleAuth={handleAuth} />;
+    return <LoginPage handleAuth={handleDriveAuth} />;
   }
 
   return (
@@ -113,10 +115,9 @@ const BigAndBingApp = () => {
             console.log('onAddStar called');
             setShowAddStar(true);
           }}
-          onSignOut={handleSignOut}
+          onSignOut={signOut}
           onSync={handleSync}
           onFetchData={handleFetchData}
-          showSync={hasChanges}
         />
         {isLoading ? (
           <LoadingPage />
@@ -124,13 +125,10 @@ const BigAndBingApp = () => {
           <Routes>
             <Route path="/" element={
               <StarManager 
-                accessToken={accessToken}
-                showModal={showAddStar}
-                onCloseModal={() => setShowAddStar(false)}
-                onSyncChange={setHasChanges}
-                onStarsUpdate={handleStarsUpdate}
+                showAddStarModal={showAddStar}
+                closeAddStarModal={() => setShowAddStar(false)}
+                updateStarDetails={handleStarsUpdate}
                 stars={stars}
-                isLoading={isLoading}
               />
             } />
             <Route path="/star/:starName" element={
@@ -138,9 +136,7 @@ const BigAndBingApp = () => {
                 stars={stars} 
                 onStarsUpdate={(newStars) => {
                   handleStarsUpdate(newStars);
-                  setHasChanges(true);
                 }}
-                onSyncChange={setHasChanges} // Pass onSyncChange to StarDetails
               />
             } />
             <Route path="/insta" element={<InstaPage />} />
@@ -151,13 +147,5 @@ const BigAndBingApp = () => {
     </HashRouter>
   );
 };
-
-// Add styles to the document
-if (!document.getElementById('app-styles')) {
-  const styleSheet = document.createElement("style");
-  styleSheet.id = 'app-styles';
-  styleSheet.innerText = styles;
-  document.head.appendChild(styleSheet);
-}
 
 export default BigAndBingApp;

@@ -1,7 +1,7 @@
-import './EditFavDialog.css';
-import React, { useState } from 'react';
+import './EditVidDialog.css';
+import { useState } from 'react';
 
-const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, handleAddTagToFav, handleRemoveTagFromFav, handleCreateNewTag }) => {
+const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, handleAddTagToFav, handleRemoveTagFromFav, handleCreateNewTag }) => {
   const [formData, setFormData] = useState({
     name: editingFav?.name || '',
     imageUrl: editingFav?.imageUrl || '',
@@ -11,7 +11,7 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
   const [newTag, setNewTag] = useState('');
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    var { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -57,10 +57,9 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
       <input
         type="text"
         name="name"
-        placeholder="Name"
+        placeholder="Video Name"
         value={formData.name}
         onChange={handleInputChange}
-        className="edit-input"
       />
       <input
         type="url"
@@ -68,7 +67,6 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
         placeholder="Image URL"
         value={formData.imageUrl}
         onChange={handleInputChange}
-        className="edit-input"
       />
       <input
         type="url"
@@ -76,7 +74,6 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
         placeholder="Video URL"
         value={formData.url}
         onChange={handleInputChange}
-        className="edit-input"
       />
       
       <div className="tag-section">
@@ -115,11 +112,11 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
         <div className="create-new-tag">
           <input
             type="text"
+            className="new-tag-input"
             placeholder="Create new tag"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="new-tag-input"
           />
           <button onClick={handleCreateTag} className="create-tag-btn">
             Create Tag
@@ -128,11 +125,11 @@ const EditFavDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
       </div>
 
       <div className="edit-actions">
-        <button onClick={handleSave} className="save-btn">Save</button>
+        <button onClick={handleSave} className="save-btn">Save Changes</button>
         <button onClick={() => setEditingFav(null)} className="cancel-btn">Cancel</button>
       </div>
     </div>
   );
 };
 
-export default EditFavDialog;
+export default EditVidDialog;

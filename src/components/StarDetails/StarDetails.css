@@ -1,6 +1,6 @@
 /* Star Details Page Styling */
 .star-details {
-  padding-top: 80px; /* Add top padding to account for fixed header */
+  padding-top: 50px; /* Add top padding to account for fixed header */
   margin: 0 auto;
   background: #ffffff;
   min-height: calc(100vh - 60px);
