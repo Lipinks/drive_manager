@@ -1,5 +1,6 @@
 .videos-page {
   display: flex;
+  flex-direction: column;
   padding: 20px;
   padding-top: 100px; /* Add top padding to account for fixed header */
   min-height: 100vh;
@@ -199,6 +200,81 @@
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
 }
 
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.tag-filter-select {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #374151;
+  min-width: 150px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.results-count {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.video-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.video-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.video-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.video-tag.highlighted {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .videos-page {
@@ -206,8 +282,20 @@
     padding-top: 90px; /* Adjust for smaller screens */
   }
 
-  .videos-page h1 {
-    font-size: 28px;
+  .filter-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .tag-filter-select {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .results-count {
+    align-self: flex-end;
   }
 
   .star-section {

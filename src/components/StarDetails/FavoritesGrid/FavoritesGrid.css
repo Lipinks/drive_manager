@@ -315,6 +315,105 @@
   font-size: 14px;
 }
 
+/* Tags Styling */
+.favorite-tags {
+  margin: 12px 0;
+  min-height: 30px;
+}
+
+.tags-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.selected-tag {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.available-tag {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.remove-icon,
+.add-icon {
+  margin-left: 6px;
+  font-weight: bold;
+}
+
+.tag-section {
+  margin: 16px 0;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.tag-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.selected-tags,
+.available-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-height: 30px;
+  padding: 8px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+}
+
+.create-new-tag {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.new-tag-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.create-tag-btn {
+  padding: 6px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.create-tag-btn:hover {
+  background: #2563eb;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .favorites-grid {

@@ -23,31 +23,32 @@ const BigAndBingApp = () => {
   });
 
   // Load stars from localStorage on mount
-  useEffect(() => {
-    const loadInitialStars = async () => {
-      try {
-        const savedStars = localStorage.getItem('stars');
-        if (savedStars) {
-          setStars(JSON.parse(savedStars));
-        }
-      } catch (error) {
-        console.error('Error loading stars:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const loadInitialStars = async () => {
+  //     try {
+  //       const savedStars = localStorage.getItem('stars');
+  //       if (savedStars) {
+  //         setStars(JSON.parse(savedStars));
+  //       }
+  //     } catch (error) {
+  //       console.error('Error loading stars:', error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    loadInitialStars();
-  }, []);
+  //   loadInitialStars();
+  // }, []);
 
   const handleFetchData = async () => {
     setIsLoading(true);
     try {
+      console.log('Going to fetch star data from Drive...');
       const starData = await starService.fetchStarFile(accessToken);
       setStars(starData);
       localStorage.setItem('stars', JSON.stringify(starData));
     } catch (error) {
-      console.error('Error fetching stars:', error);
+      console.error('Error fetching stars - handleFetchData:', error);
       alert('Failed to fetch data from Drive');
     } finally {
       setIsLoading(false);
@@ -56,36 +57,48 @@ const BigAndBingApp = () => {
 
   const handleStarsUpdate = (newStars) => {
     if (Array.isArray(newStars)) {
+      console.log('Updating stars as received from child component...');
       setStars(newStars);
       localStorage.setItem('stars', JSON.stringify(newStars));
     }
   };
 
   const handleSync = async () => {
+    console.log('Starting sync to Drive...');
     setIsLoading(true);
-    try {
-      const element = document.querySelector('.star-manager');
-      if (element) {
-        // Listen for sync completion
-        const handleSyncComplete = () => {
-          setIsLoading(false);
-          element.removeEventListener('syncComplete', handleSyncComplete);
-        };
+    // try {
+    //   const element = document.querySelector('.star-manager');
+    //   if (element) {
+    //     // Listen for sync completion
+    //     const handleSyncComplete = () => {
+    //       setIsLoading(false);
+    //       element.removeEventListener('syncComplete', handleSyncComplete);
+    //     };
         
-        element.addEventListener('syncComplete', handleSyncComplete);
-        element.dispatchEvent(new Event('syncToDrive'));
+    //     element.addEventListener('syncComplete', handleSyncComplete);
+    //     element.dispatchEvent(new Event('syncToDrive'));
         
-        // Fallback timeout in case sync complete event doesn't fire
-        setTimeout(() => {
-          setIsLoading(false);
-          element.removeEventListener('syncComplete', handleSyncComplete);
-        }, 5000);
-      }
-    } catch (error) {
+    //     // Fallback timeout in case sync complete event doesn't fire
+    //     setTimeout(() => {
+    //       setIsLoading(false);
+    //       element.removeEventListener('syncComplete', handleSyncComplete);
+    //     }, 5000);
+    //   }
+    // } catch (error) {
+    //   console.error('Sync error:', error);
+    //   alert('Failed to sync with Drive');
+    //   setIsLoading(false);
+    // }
+    try{
+    var accessToken = localStorage.getItem('accessToken');
+    await starService.saveStarFile(accessToken);
+    }catch(error){
       console.error('Sync error:', error);
       alert('Failed to sync with Drive');
+    } finally {
       setIsLoading(false);
     }
+
   };
 
   if (!accessToken) {

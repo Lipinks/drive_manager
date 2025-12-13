@@ -3,6 +3,9 @@ import './VideosPage.css';
 
 const VideosPage = () => {
   const [allFavorites, setAllFavorites] = useState([]);
+  const [filteredFavorites, setFilteredFavorites] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
 
   useEffect(() => {
     // Load favorites data from localStorage and flatten into single array
@@ -12,18 +15,27 @@ const VideosPage = () => {
         if (storedData) {
           const favoritesData = JSON.parse(storedData);
           const flattened = [];
+          const tagsSet = new Set();
           
           // Flatten all favorites from all stars into one array
           Object.entries(favoritesData).forEach(([starName, favorites]) => {
             favorites.forEach(favorite => {
-              flattened.push({
+              const favWithStar = {
                 ...favorite,
                 starName: starName
-              });
+              };
+              flattened.push(favWithStar);
+              
+              // Collect all unique tags
+              if (favorite.tags && Array.isArray(favorite.tags)) {
+                favorite.tags.forEach(tag => tagsSet.add(tag));
+              }
             });
           });
           
           setAllFavorites(flattened);
+          setFilteredFavorites(flattened);
+          setAvailableTags([...tagsSet].sort());
         }
       } catch (error) {
         console.error('Error loading favorites data:', error);
@@ -33,13 +45,54 @@ const VideosPage = () => {
     loadFavoritesData();
   }, []);
 
+  // Filter favorites based on selected tag
+  useEffect(() => {
+    if (!selectedTag) {
+      setFilteredFavorites(allFavorites);
+    } else {
+      const filtered = allFavorites.filter(favorite => 
+        favorite.tags && favorite.tags.includes(selectedTag)
+      );
+      setFilteredFavorites(filtered);
+    }
+  }, [selectedTag, allFavorites]);
+
+  const handleTagChange = (e) => {
+    setSelectedTag(e.target.value);
+  };
+
   return (
     <div className="videos-page">
-      {allFavorites.length === 0 ? (
-        <p className="no-data">No videos found</p>
+      {/* Tag Filter Section */}
+      <div className="filter-section">
+        <label htmlFor="tag-filter" className="filter-label">
+          Filter by Category:
+        </label>
+        <select 
+          id="tag-filter" 
+          value={selectedTag} 
+          onChange={handleTagChange}
+          className="tag-filter-select"
+        >
+          <option value="">All Categories</option>
+          {availableTags.map(tag => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
+        <span className="results-count">
+          {filteredFavorites.length} video{filteredFavorites.length !== 1 ? 's' : ''} found
+        </span>
+      </div>
+
+      {filteredFavorites.length === 0 ? (
+        <p className="no-data">
+          {selectedTag ? `No videos found for category "${selectedTag}"` : 'No videos found'}
+        </p>
       ) : (
         <div className="videos-grid">
-          {allFavorites.map((favorite) => (
+          {filteredFavorites.map((favorite) => (
             <div key={`${favorite.starName}-${favorite.id}`} className="video-card">
               <div className="card-image">
                 <img 
@@ -53,6 +106,23 @@ const VideosPage = () => {
               <div className="card-content">
                 <h3 className="video-name">{favorite.name}</h3>
                 <p className="star-name">{favorite.starName.charAt(0).toUpperCase() + favorite.starName.slice(1)}</p>
+                
+                {/* Display tags */}
+                {favorite.tags && favorite.tags.length > 0 && (
+                  <div className="video-tags">
+                    {favorite.tags.map((tag, index) => (
+                      <span 
+                        key={index} 
+                        className={`video-tag ${selectedTag === tag ? 'highlighted' : ''}`}
+                        onClick={() => setSelectedTag(tag)}
+                        title="Click to filter by this tag"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
                 {favorite.url && (
                   <a 
                     href={favorite.url} 

@@ -68,8 +68,9 @@ const StarDetails = ({ stars = [], onStarsUpdate, onSyncChange }) => {
 
   // load available tags (global list) from localStorage
   useEffect(() => {
-    const avail = JSON.parse(localStorage.getItem('tags') || '[]');
-    setAvailableTags(Array.isArray(avail) ? avail : []);
+    // Load global tags from localStorage (used by stars)
+    const globalTags = JSON.parse(localStorage.getItem('tags')) || [];
+    setAvailableTags(Array.isArray(globalTags) ? globalTags : []);
   }, []);
 
   // Handlers for tag-section (selected/available/create)
@@ -224,26 +225,39 @@ const StarDetails = ({ stars = [], onStarsUpdate, onSyncChange }) => {
     }
   };
 
+  const handleEditFavorite = (favId, updatedData) => {
+    const updatedFavorites = favorites.map(fav => 
+      fav.id === favId ? { ...fav, ...updatedData } : fav
+    );
+    
+    const currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
+    currentFavs[starName] = updatedFavorites;
+    localStorage.setItem('favorites', JSON.stringify(currentFavs));
+    setFavorites(updatedFavorites);
+    setEditingFav(null);
+    onSyncChange(true);
+  };
+
   const handleAddFavorite = () => {
     if (!newFavorite.name || !newFavorite.imageUrl) {
-      alert('Please fill in at least Name and Image URL');
+      alert('Please fill in name and image URL');
       return;
     }
 
-    const updatedFavorites = [...favorites, { ...newFavorite, id: Date.now() }];
-    setFavorites(updatedFavorites);
-    saveFavoritesToStorage(updatedFavorites);
-    setNewFavorite({ name: '', imageUrl: '', url: '' });
-    setShowFavModal(false);
-  };
+    const favorite = {
+      ...newFavorite,
+      id: Date.now(),
+      tags: newFavorite.tags || []
+    };
 
-  const handleEditFavorite = (favorite) => {
-    const updatedFavorites = favorites.map(fav => 
-      fav.id === favorite.id ? { ...favorite } : fav
-    );
+    const updatedFavorites = [...favorites, favorite];
+    const currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
+    currentFavs[starName] = updatedFavorites;
+    localStorage.setItem('favorites', JSON.stringify(currentFavs));
     setFavorites(updatedFavorites);
-    saveFavoritesToStorage(updatedFavorites);
-    setEditingFav(null);
+    setNewFavorite({ name: '', imageUrl: '', url: '', tags: [] });
+    setShowFavModal(false);
+    onSyncChange(true);
   };
 
   const handleDeleteFavorite = (id) => {
@@ -275,6 +289,14 @@ const StarDetails = ({ stars = [], onStarsUpdate, onSyncChange }) => {
         setEditingFav={setEditingFav}
         handleEditFavorite={handleEditFavorite}
         handleDeleteFavorite={handleDeleteFavorite}
+        tags={availableTags}
+        handleCreateNewTag={(newTag) => {
+          if (newTag.trim() && !availableTags.includes(newTag.trim())) {
+            const updatedTags = [...availableTags, newTag.trim()];
+            setAvailableTags(updatedTags);
+            localStorage.setItem('tags', JSON.stringify(updatedTags));
+          }
+        }}
       />
 
       {showEditModal && (
