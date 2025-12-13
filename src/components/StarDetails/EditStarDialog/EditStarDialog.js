@@ -1,10 +1,10 @@
-import './EditStarDialog.css';
+import '../../StarManager/AddStarDialog/AddStarDialog.css';
 
 const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowVidEditModal, handleAddTagToStar, handleRemoveTagFromStar, availableTags, newTag, setNewTag, handleCreateNewTag, handleKeyPress}) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div className="name-input-section"></div>
+        <div className="name-input-section">
           <div className='add-new-star'>Edit Star</div>
           <input
             type="text"
@@ -72,6 +72,7 @@ const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowV
             <button onClick={() => setShowVidEditModal(false)} className="cancel-btn">Cancel</button>
           </div>
         </div>
+      </div>
       </div>
   );
 } 

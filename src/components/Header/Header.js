@@ -9,7 +9,7 @@ const Header = ({ onAddStar, onSignOut, onSync, onFetchData }) => {
       <div className="logo">BigAndBig</div>
       <div className="header-buttons">
         <button onClick={() => navigate('/')} className="header-btn home-btn">Home</button>
-        <button onClick={() => navigate('/videos')} className="header-btn home-btn">Videos</button>
+        <button onClick={() => navigate('/videos')} className="header-btn videos-btn">Videos</button>
         <button onClick={() => {
           console.log('Add Star button clicked');
           onAddStar();

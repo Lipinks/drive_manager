@@ -67,7 +67,7 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
   };
 
   const handleSave = () => {
-    if (!newStar.Name || !newStar.Age || !newStar.Country || !newStar.Image_Link) {
+    if (!newStar.Name || !newStar.Image_Link) {
       alert('Please fill all fields');
       return;
     }
@@ -131,7 +131,7 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
                 onClick={() => handleDelete(index)} 
                 className="delete-star-btn"
                 aria-label="Delete star"
-              >💋
+              >x
               </button>
             </div>
             <div className="star-info">

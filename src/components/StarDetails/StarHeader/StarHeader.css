@@ -2,8 +2,9 @@
 .star-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 5px;
+  padding-right: 100px;
   background: linear-gradient(135deg, #fff9e6 0%, #fef5e7 100%);
   border-radius: 20px;
   box-shadow: 
@@ -112,26 +113,8 @@
   border-radius: 2px;
 }
 
-.star-text-info .age,
-.star-text-info .country {
-  font-family: 'Inter', sans-serif;
-  font-size: 18px;
-  color: #555;
-  margin: 12px 0;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
-  display: flex;
-  align-items: center;
-}
-
 .star-text-info .age::before {
   content: "🎂";
-  margin-right: 10px;
-  font-size: 16px;
-}
-
-.star-text-info .country::before {
-  content: "🌍";
   margin-right: 10px;
   font-size: 16px;
 }

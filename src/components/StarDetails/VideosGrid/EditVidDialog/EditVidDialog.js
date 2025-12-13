@@ -54,30 +54,39 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
 
   return (
     <div className="edit-dialog">
-      <input
-        type="text"
-        name="name"
-        placeholder="Video Name"
-        value={formData.name}
-        onChange={handleInputChange}
-      />
-      <input
-        type="url"
-        name="imageUrl"
-        placeholder="Image URL"
-        value={formData.imageUrl}
-        onChange={handleInputChange}
-      />
-      <input
-        type="url"
-        name="url"
-        placeholder="Video URL"
-        value={formData.url}
-        onChange={handleInputChange}
-      />
+      <div className='label-input'>
+        <div className='label-content'>Video Name</div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Video Name"
+          value={formData.name}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div className='label-input'>
+        <div className='label-content'>Thumbnail URL</div>
+        <input
+          type="url"
+          name="imageUrl"
+          placeholder="Image URL"
+          value={formData.imageUrl}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div className='label-input'>
+        <div className='label-content'>Video URL</div>
+        <input
+          type="url"
+          name="url"
+          placeholder="Video URL"
+          value={formData.url}
+          onChange={handleInputChange}
+        />
+      </div>
       
       <div className="tag-section">
-        <h4>Selected Tags</h4>
+        <div className="label-content">Selected Tags</div>
         <div className="selected-tags">
           {formData.tags.map(tag => (
             <span 
@@ -92,7 +101,7 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
           ))}
         </div>
         
-        <h4>Available Tags</h4>
+        <div className="label-content">Available Tags</div>
         <div className="available-tags">
           {tags
             .filter(tag => !formData.tags.includes(tag))
@@ -121,12 +130,9 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
           <button onClick={handleCreateTag} className="create-tag-btn">
             Create Tag
           </button>
+          <button onClick={handleSave} className="save-btn">Save Changes</button>
+          <button onClick={() => setEditingFav(null)} className="cancel-btn">Cancel</button>
         </div>
-      </div>
-
-      <div className="edit-actions">
-        <button onClick={handleSave} className="save-btn">Save Changes</button>
-        <button onClick={() => setEditingFav(null)} className="cancel-btn">Cancel</button>
       </div>
     </div>
   );

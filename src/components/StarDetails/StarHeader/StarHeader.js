@@ -10,7 +10,7 @@ const StarHeader = ({ star, setShowVidEditModal, setShowVidAddModal }) => {
         <div className="star-text-info">
           <h1>{star.Name}</h1>
           <div className="tags-list">
-            <strong>Tags:</strong>
+            <strong>Tags 🏷️</strong>
             {star.Tags.length === 0 ? (
               <span className="no-tags"> No tags</span>
             ) : (
@@ -27,10 +27,10 @@ const StarHeader = ({ star, setShowVidEditModal, setShowVidAddModal }) => {
       </div>
       <div className="button-group">
         <button className="add-favorite-btn" onClick={() => setShowVidAddModal(true)}>
-          Add Favorite
+          Add Video 📺
         </button>
         <button className="add-favorite-btn" onClick={() => setShowVidEditModal(true)}>
-          Edit Star
+          Edit Star ✂️
         </button>
       </div>
     </div>

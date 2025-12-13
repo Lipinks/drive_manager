@@ -46,3 +46,18 @@
   display: flex;
   gap: 8px;
 }
+
+.modal-content .label-input{
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-content .label-content{
+  width: 120px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}

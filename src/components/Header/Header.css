@@ -133,6 +133,10 @@
     content: "🏠";
 }
 
+.videos-btn::after {
+    content: "📺";
+}
+
 .fetch-btn::after {
     content: "📥";
 }

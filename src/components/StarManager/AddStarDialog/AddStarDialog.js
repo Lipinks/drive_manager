@@ -12,6 +12,7 @@ const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemov
             placeholder="Name"
             value={newStar.Name}
             onChange={handleInputChange}
+
           />
           <input
             type="url"
@@ -72,7 +73,7 @@ const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemov
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 
