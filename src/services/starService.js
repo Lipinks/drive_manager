@@ -21,10 +21,6 @@ export const saveStarFile = async (accessToken) => {
     // Ensure it's a plain array, not a nested object
     const starsArray = Array.isArray(stars) ? stars : 
                       (stars?.stars ? stars.stars : []);
-    
-    // Save only the stars array to drive
-    const favoritesRaw = JSON.parse(localStorage.getItem('favorites') || '{}');
-    const tagsRaw = JSON.parse(localStorage.getItem('tags') || '[]');
 
     await saveFile(accessToken, FILES.STAR, starsArray);
     console.log('Saved stars:', starsArray);
@@ -122,7 +118,7 @@ export const fetchStarFile = async (accessToken) => {
                  starsData?.stars ? starsData.stars : [];
 
     // Store normalized data in localStorage
-    localStorage.setItem('stars', JSON.stringify(stars));
+    stars.sort();
     localStorage.setItem('favorites', JSON.stringify(favoritesData || {}));
     localStorage.setItem('tags', JSON.stringify(tagsData || []));
 

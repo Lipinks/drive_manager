@@ -138,11 +138,11 @@
 }
 
 .fetch-btn::after {
-    content: "📥";
+    content: "⬇️";
 }
 
 .sync-btn::after {
-    content: "🔄";
+    content: "⬆️";
 }
 
 .add-star-btn::after {
@@ -154,7 +154,7 @@
 }
 
 .signout-btn::after {
-    content: "🚪";
+    content: "➡️";
 }
 
 /* Responsive design */

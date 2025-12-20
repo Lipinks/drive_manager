@@ -11,15 +11,12 @@ const VideosGrid = ({ favorites = [], setEditingFav, handleDeleteFavorite }) => 
             <h3>{fav.name}</h3>
           <div className="favorite-tags">
             {fav.tags && fav.tags.length > 0 && (
-              <div >
-                <select className="tags-dropdown">
-                  <option value="">{`Tags (${fav.tags.length})`}</option>
+              <div className="tags-scroll-container">
+                <div className="tags-scroll-wrapper">
                   {fav.tags.map((tag, index) => (
-                    <option key={index} value={tag}>
-                      {tag}
-                    </option>
+                    <span key={index} className="tag">{tag}</span>
                   ))}
-                </select>
+                </div>
               </div>
             )}
             <button onClick={() => setEditingFav(fav)} className='vid-edit-button'>Edit</button>

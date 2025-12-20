@@ -65,7 +65,11 @@ const BigAndBingApp = () => {
       console.log('Going to fetch star data from Drive...');
       const starData = await starService.fetchStarFile(accessToken);
       setStars(starData);
-      localStorage.setItem('stars', JSON.stringify(starData));
+      console.log('Fetched star data:', starData);
+      // stars.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' }));
+      const sortedStars = [...stars].sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' }));
+      console.log('Sorted star data:', sortedStars);
+      localStorage.setItem('stars', JSON.stringify(sortedStars));
     } catch (error) {
       console.error('Error fetching stars - handleFetchData:', error);
       alert('Failed to fetch data from Drive');
