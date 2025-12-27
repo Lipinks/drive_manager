@@ -23,11 +23,8 @@ export const saveStarFile = async (accessToken) => {
                       (stars?.stars ? stars.stars : []);
 
     await saveFile(accessToken, FILES.STAR, starsArray);
-    console.log('Saved stars:', starsArray);
     await saveFile(accessToken, FILES.FAVORITES, JSON.parse(localStorage.getItem('favorites')));
-    console.log('Saved favorites:', JSON.parse(localStorage.getItem('favorites')));
     await saveFile(accessToken, FILES.TAGS, JSON.parse(localStorage.getItem('tags')));
-    console.log('Saved tags:', JSON.parse(localStorage.getItem('tags')));
   } catch (error) {
     console.error('Save error:', error);
     throw error;
@@ -137,7 +134,7 @@ export const editStar = async (starId, updatedData) => {
     const updatedStars = starsArray.map(star => 
       star.id === starId ? { ...star, ...updatedData } : star
     );
-    
+    console.log('Updated stars array:', updatedStars);
     localStorage.setItem('stars', JSON.stringify(updatedStars));
     return updatedStars;
   } catch (error) {
@@ -160,16 +157,11 @@ export const syncWithDrive = async (accessToken) => {
     const tags = validateData(tagsRaw, 'array');
 
     // upload in parallel (order doesn't matter)
-    const results = await Promise.all([
+    await Promise.all([
       saveFile(accessToken, FILES.STAR, stars),
       saveFile(accessToken, FILES.FAVORITES, favorites),
       saveFile(accessToken, FILES.TAGS, tags)
     ]);
-    console.log('syncWithDrive results:', {
-      star: !!results[0],
-      favorites: !!results[1],
-      tags: !!results[2]
-    });
   } catch (error) {
     console.error('Sync error:', error);
     throw error;

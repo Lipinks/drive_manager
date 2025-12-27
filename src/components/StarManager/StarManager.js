@@ -92,6 +92,10 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
     if (isConfirmed) {
       var newStars = stars.filter((_, i) => i !== index);
       updateStarDetails(newStars);
+      //also delete videos associated with this star
+      var favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+      delete favorites[star.Name.toLowerCase()];
+      localStorage.setItem('favorites', JSON.stringify(favorites));
     }
   };
 

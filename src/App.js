@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import * as starService from './services/starService';
 import LoginPage from './components/LoginPage/LoginPage';
 import LoadingPage from './components/LoadingPage/LoadingPage';
@@ -9,6 +9,17 @@ import StarDetails from './components/StarDetails/StarDetails';
 import VideosPage from './components/VideosPage/VideosPage';
 import InstaPage from './components/InstaPage/InstaPage';
 import './App.css';
+
+// Component to scroll to top on route change
+const ScrollToTop = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+  
+  return null;
+};
 
 const BigAndBingApp = () => {
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
@@ -59,16 +70,18 @@ const BigAndBingApp = () => {
     }
   };
 
-  const handleFetchData = async () => {
+  var handleFetchData = async () => {
     setIsLoading(true);
     try {
       console.log('Going to fetch star data from Drive...');
-      const starData = await starService.fetchStarFile(accessToken);
-      setStars(starData);
-      console.log('Fetched star data:', starData);
-      // stars.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' }));
-      const sortedStars = [...stars].sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' }));
-      console.log('Sorted star data:', sortedStars);
+      var starData = await starService.fetchStarFile(accessToken);
+      
+      // Sort the fetched data directly, don't use the old stars state
+      var sortedStars = [...starData].sort((a, b) => 
+        a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' })
+      );
+      
+      setStars(sortedStars);
       localStorage.setItem('stars', JSON.stringify(sortedStars));
     } catch (error) {
       console.error('Error fetching stars - handleFetchData:', error);
@@ -82,6 +95,7 @@ const BigAndBingApp = () => {
     if (Array.isArray(newStars)) {
       console.log('Updating stars as received from child component...');
       setStars(newStars);
+      console.log('Stars updated in state and localStorage.');
       localStorage.setItem('stars', JSON.stringify(newStars));
     }
   };
@@ -113,6 +127,7 @@ const BigAndBingApp = () => {
 
   return (
     <HashRouter>
+      <ScrollToTop />
       <div>
         <Header 
           onAddStar={() => {
@@ -144,7 +159,7 @@ const BigAndBingApp = () => {
               />
             } />
             <Route path="/insta" element={<InstaPage />} />
-            <Route path="/videos" element={<VideosPage />} />
+            <Route path="/videos" element={<VideosPage starName={''} />} />
           </Routes>
         )}
       </div>

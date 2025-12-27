@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AddVidDialog from './AddVidDialog/AddVidDialog';
 import StarHeader from './StarHeader/StarHeader';
 import EditStarDialog from './EditStarDialog/EditStarDialog';
-import VideosGrid from './VideosGrid/VideosGrid';
-import EditVidDialog from './VideosGrid/EditVidDialog/EditVidDialog';
+import VideosPage from '../VideosPage/VideosPage';
 import './StarDetails.css';
 
 const StarDetails = ({ stars = [], onStarsUpdate }) => {
@@ -22,7 +21,6 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
   const [availableTags, setAvailableTags] = useState([]);
   const [newTag, setNewTag] = useState('');
   const [favorites, setFavorites] = useState([]);
-  const [editingFav, setEditingFav] = useState(null);
   const [newFavorite, setNewFavorite] = useState({
     name: '',
     imageUrl: '',
@@ -30,7 +28,6 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
   });
   const [showVidEditModal, setShowVidEditModal] = useState(false);
   const [showVidsModal, setShowVidAddModal] = useState(false);
-  const [showEditVidModal, setShowEditVidModal] = useState(false);
 
   // Tags state for this star
   const [tags, setTags] = useState([]);
@@ -110,12 +107,6 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
       handleCreateNewTag();
     }
   };
-  
-  const saveFavoritesToStorage = (updatedFavorites) => {
-    var allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-    allFavorites[starName] = updatedFavorites;
-    localStorage.setItem('favorites', JSON.stringify(allFavorites));
-  };
 
   const saveTagsToStorage = (updatedTags, targetStarName = starName) => {
     var allTags = JSON.parse(localStorage.getItem('tags')) || {};
@@ -137,6 +128,7 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     var updatedStars = [...stars];
     updatedStars[starIndex] = editedStar;
     onStarsUpdate(updatedStars);
+    console.log('Star edited:', editedStar);
     localStorage.setItem('stars', JSON.stringify(updatedStars));
     // migrate tags if name changed
     if (editedStar.Name && editedStar.Name !== star.Name) {
@@ -153,19 +145,6 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     if (editedStar.Name.toLowerCase() !== star.Name.toLowerCase()) {
       navigate('/');
     }
-  };
-
-  const handleEditFavorite = (favId, updatedData) => {
-    var updatedFavorites = favorites.map(fav => 
-      fav.id === favId ? { ...fav, ...updatedData } : fav
-    );
-    
-    var currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
-    currentFavs[starName] = updatedFavorites;
-    localStorage.setItem('favorites', JSON.stringify(currentFavs));
-    setFavorites(updatedFavorites);
-    setEditingFav(null);
-    setShowEditVidModal(false);
   };
 
   const handleAddFavorite = () => {
@@ -187,12 +166,7 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     setFavorites(updatedFavorites);
     setNewFavorite({ name: '', imageUrl: '', url: '', tags: [] });
     setShowVidAddModal(false);
-  };
-
-  const handleDeleteFavorite = (id) => {
-    var updatedFavorites = favorites.filter(fav => fav.id !== id);
-    setFavorites(updatedFavorites);
-    saveFavoritesToStorage(updatedFavorites);
+    window.location.reload();
   };
 
   if (!star) {
@@ -225,41 +199,13 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
           setShowVidAddModal={setShowVidAddModal} />
       )}
 
-      {showEditVidModal && editingFav && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <EditVidDialog 
-              editingFav={editingFav}
-              handleEditFavorite={handleEditFavorite}
-              setEditingFav={() => {
-                setEditingFav(null);
-                setShowEditVidModal(false);
-              }}
-              tags={availableTags}
-              handleCreateNewTag={(newTag) => {
-                if (newTag.trim() && !availableTags.includes(newTag.trim())) {
-                  var updatedTags = [...availableTags, newTag.trim()];
-                  setAvailableTags(updatedTags);
-                  localStorage.setItem('tags', JSON.stringify(updatedTags));
-                }
-              }}
-            />
-          </div>
-        </div>
-      )}
-
       <StarHeader 
         star={star}
         setShowVidEditModal={setShowVidEditModal}
-        setShowVidAddModal={setShowVidAddModal} />
-
-      <VideosGrid
-        favorites={favorites}
-        setEditingFav={(fav) => {
-          setEditingFav(fav);
-          setShowEditVidModal(true);
-        }}
-        handleDeleteFavorite={handleDeleteFavorite}
+        setShowVidAddModal={setShowVidAddModal} 
+      />
+      <VideosPage 
+        starName={star.Name}
       />
     </div>
   );

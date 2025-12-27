@@ -1,13 +1,24 @@
 import './EditVidDialog.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, handleAddTagToFav, handleRemoveTagFromFav, handleCreateNewTag }) => {
+const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags, handleCreateNewTag }) => {
   const [formData, setFormData] = useState({
-    name: editingFav?.name || '',
-    imageUrl: editingFav?.imageUrl || '',
-    url: editingFav?.url || '',
-    tags: editingFav?.tags || []
+    name: '',
+    imageUrl: '',
+    url: '',
+    tags: []
   });
+
+  useEffect(() => {
+    if (editingVideo) {
+      setFormData({
+        name: editingVideo.name || '',
+        imageUrl: editingVideo.imageUrl || '',
+        url: editingVideo.url || '',
+        tags: editingVideo.tags || []
+      });
+    }
+  }, [editingVideo]);
   const [newTag, setNewTag] = useState('');
 
   const handleInputChange = (e) => {
@@ -19,7 +30,7 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
   };
 
   const handleSave = () => {
-    handleEditFavorite(editingFav.id, formData);
+    handleEditFavorite(editingVideo.id, formData, editingVideo.starName);
   };
 
   const handleAddTag = (tag) => {
@@ -56,6 +67,7 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
     <div className="edit-dialog">
       <div className='label-input'>
         <div className='label-content'>Video Name</div>
+        
         <input
           type="text"
           name="name"
@@ -131,7 +143,7 @@ const EditVidDialog = ({ editingFav, handleEditFavorite, setEditingFav, tags, ha
             Create Tag
           </button>
           <button onClick={handleSave} className="save-btn">Save Changes</button>
-          <button onClick={() => setEditingFav(null)} className="cancel-btn">Cancel</button>
+          <button onClick={() => setEditingVideo(null)} className="cancel-btn">Cancel</button>
         </div>
       </div>
     </div>

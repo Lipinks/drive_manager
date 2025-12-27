@@ -4,7 +4,7 @@ const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShow
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Add New Favorite</h2>
+        <h2>Add New Video</h2>
         <input
           type="text"
           placeholder="Name"
@@ -13,13 +13,13 @@ const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShow
         />
         <input
           type="url"
-          placeholder="Image URL"
+          placeholder="Thumbnail URL"
           value={newFavorite.imageUrl}
           onChange={(e) => setNewFavorite({ ...newFavorite, imageUrl: e.target.value })}
         />
         <input
           type="url"
-          placeholder="URL (optional)"
+          placeholder="Video URL"
           value={newFavorite.url}
           onChange={(e) => setNewFavorite({ ...newFavorite, url: e.target.value })}
         />
