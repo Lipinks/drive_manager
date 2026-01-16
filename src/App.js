@@ -102,6 +102,10 @@ const BigAndBingApp = () => {
 
   const handleSync = async () => {
     console.log('Starting sync to Drive...');
+    var isConfirmed = window.confirm(`Are you sure you want to sync current data to Drive? This will overwrite the existing data on Drive.`);
+    if (!isConfirmed) {
+      return;
+    }
     setIsLoading(true);
     try{
       await starService.saveStarFile(accessToken);

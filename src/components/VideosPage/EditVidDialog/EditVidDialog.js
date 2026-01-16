@@ -6,6 +6,8 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
     name: '',
     imageUrl: '',
     url: '',
+    videoDuration: '',
+    isVPN: false,
     tags: []
   });
 
@@ -15,6 +17,8 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
         name: editingVideo.name || '',
         imageUrl: editingVideo.imageUrl || '',
         url: editingVideo.url || '',
+        videoDuration: editingVideo.videoDuration || '',
+        isVPN: editingVideo.isVPN || false,
         tags: editingVideo.tags || []
       });
     }
@@ -22,10 +26,10 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
   const [newTag, setNewTag] = useState('');
 
   const handleInputChange = (e) => {
-    var { name, value } = e.target;
+    var { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -96,6 +100,33 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
           onChange={handleInputChange}
         />
       </div>
+
+      <div className='label-input-row'>
+        <div className='label-input duration-input'>
+          <div className='label-content'>Video Duration</div>
+          <input
+            type="text"
+            name="videoDuration"
+            placeholder="Duration"
+            value={formData.videoDuration}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className='label-input vpn-input'>
+          <div className='label-content'>VPN Needed?</div>
+          <label className="vpn-checkbox-label">
+            <input
+              type="checkbox"
+              name="isVPN"
+              checked={formData.isVPN}
+              onChange={handleInputChange}
+            />
+            <span className="vpn-checkbox-text">{formData.isVPN ? 'Yes' : 'No'}</span>
+          </label>
+        </div>
+      </div>
+
+      
       
       <div className="tag-section">
         <div className="label-content">Selected Tags</div>

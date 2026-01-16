@@ -4,14 +4,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 5px;
-  padding-right: 100px;
+  padding-right: 30px;
+  padding-left: 30px;
   background: linear-gradient(135deg, #fff9e6 0%, #fef5e7 100%);
   border-radius: 20px;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
     0 2px 8px rgba(218, 165, 32, 0.2);
   border: 1px solid rgba(255, 215, 0, 0.3);
-  position: relative;
+  position: sticky;
+  top: 50px; /* Below main header (60px) + filter section (~52px) */
+  z-index: 40; /* Lower than filter section (150) */
   overflow: hidden;
 }
 
@@ -87,8 +90,16 @@
 }
 
 .star-text-info {
-  padding: 15px 0;
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.star-name-icon {
+  height: 55px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .star-text-info h1 {
@@ -96,7 +107,7 @@
   font-size: 42px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 20px 0;
+  margin: 0;
   letter-spacing: -0.5px;
   position: relative;
   display: inline-block;
@@ -185,7 +196,7 @@
 
 .button-group {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 15px;
   position: relative;
   z-index: 1;
@@ -258,6 +269,7 @@
     font-size: 36px;
   }
   
+  
   .star-text-info h1::after {
     left: 50%;
     transform: translateX(-50%);
@@ -283,6 +295,7 @@
   .star-text-info h1 {
     font-size: 32px;
   }
+ 
   
   .button-group {
     flex-direction: column;

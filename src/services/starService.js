@@ -1,4 +1,5 @@
 import * as driveService from './driveService';
+import { withTokenRefresh } from './authService';
 
 const FILES = {
   STAR: 'star.json',
@@ -14,21 +15,23 @@ const validateData = (data, type = 'array') => {
 };
 
 export const saveStarFile = async (accessToken) => {
-  try {
-    // Get raw stars array from localStorage
-    const stars = JSON.parse(localStorage.getItem('stars') || '[]');
-    
-    // Ensure it's a plain array, not a nested object
-    const starsArray = Array.isArray(stars) ? stars : 
-                      (stars?.stars ? stars.stars : []);
+  return withTokenRefresh(async (token) => {
+    try {
+      // Get raw stars array from localStorage
+      const stars = JSON.parse(localStorage.getItem('stars') || '[]');
+      
+      // Ensure it's a plain array, not a nested object
+      const starsArray = Array.isArray(stars) ? stars : 
+                        (stars?.stars ? stars.stars : []);
 
-    await saveFile(accessToken, FILES.STAR, starsArray);
-    await saveFile(accessToken, FILES.FAVORITES, JSON.parse(localStorage.getItem('favorites')));
-    await saveFile(accessToken, FILES.TAGS, JSON.parse(localStorage.getItem('tags')));
-  } catch (error) {
-    console.error('Save error:', error);
-    throw error;
-  }
+      await saveFile(token, FILES.STAR, starsArray);
+      await saveFile(token, FILES.FAVORITES, JSON.parse(localStorage.getItem('favorites')));
+      await saveFile(token, FILES.TAGS, JSON.parse(localStorage.getItem('tags')));
+    } catch (error) {
+      console.error('Save error:', error);
+      throw error;
+    }
+  });
 };
 
 const saveFile = async (accessToken, fileName, data) => {
@@ -103,27 +106,29 @@ const fetchFile = async (accessToken, fileName) => {
 };
 
 export const fetchStarFile = async (accessToken) => {
-  try {
-    const [starsData, favoritesData, tagsData] = await Promise.all([
-      fetchFile(accessToken, FILES.STAR),
-      fetchFile(accessToken, FILES.FAVORITES),
-      fetchFile(accessToken, FILES.TAGS)
-    ]);
+  return withTokenRefresh(async (token) => {
+    try {
+      const [starsData, favoritesData, tagsData] = await Promise.all([
+        fetchFile(token, FILES.STAR),
+        fetchFile(token, FILES.FAVORITES),
+        fetchFile(token, FILES.TAGS)
+      ]);
 
-    // Ensure consistent array format for stars
-    const stars = Array.isArray(starsData) ? starsData : 
-                 starsData?.stars ? starsData.stars : [];
+      // Ensure consistent array format for stars
+      const stars = Array.isArray(starsData) ? starsData : 
+                   starsData?.stars ? starsData.stars : [];
 
-    // Store normalized data in localStorage
-    stars.sort();
-    localStorage.setItem('favorites', JSON.stringify(favoritesData || {}));
-    localStorage.setItem('tags', JSON.stringify(tagsData || []));
+      // Store normalized data in localStorage
+      stars.sort();
+      localStorage.setItem('favorites', JSON.stringify(favoritesData || {}));
+      localStorage.setItem('tags', JSON.stringify(tagsData || []));
 
-    return stars;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return [];
-  }
+      return stars;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return [];
+    }
+  });
 };
 
 export const editStar = async (starId, updatedData) => {
@@ -144,26 +149,28 @@ export const editStar = async (starId, updatedData) => {
 };
 
 export const syncWithDrive = async (accessToken) => {
-  try {
-    if (!accessToken) throw new Error('Missing access token');
+  return withTokenRefresh(async (token) => {
+    try {
+      if (!token) throw new Error('Missing access token');
 
-    // safe parse with defaults
-    const starsRaw = JSON.parse(localStorage.getItem('stars') || '[]');
-    const favoritesRaw = JSON.parse(localStorage.getItem('favorites') || '{}');
-    const tagsRaw = JSON.parse(localStorage.getItem('tags') || '[]');
+      // safe parse with defaults
+      const starsRaw = JSON.parse(localStorage.getItem('stars') || '[]');
+      const favoritesRaw = JSON.parse(localStorage.getItem('favorites') || '{}');
+      const tagsRaw = JSON.parse(localStorage.getItem('tags') || '[]');
 
-    const stars = validateData(starsRaw, 'array');
-    const favorites = validateData(favoritesRaw, 'object');
-    const tags = validateData(tagsRaw, 'array');
+      const stars = validateData(starsRaw, 'array');
+      const favorites = validateData(favoritesRaw, 'object');
+      const tags = validateData(tagsRaw, 'array');
 
-    // upload in parallel (order doesn't matter)
-    await Promise.all([
-      saveFile(accessToken, FILES.STAR, stars),
-      saveFile(accessToken, FILES.FAVORITES, favorites),
-      saveFile(accessToken, FILES.TAGS, tags)
-    ]);
-  } catch (error) {
-    console.error('Sync error:', error);
-    throw error;
-  }
+      // upload in parallel (order doesn't matter)
+      await Promise.all([
+        saveFile(token, FILES.STAR, stars),
+        saveFile(token, FILES.FAVORITES, favorites),
+        saveFile(token, FILES.TAGS, tags)
+      ]);
+    } catch (error) {
+      console.error('Sync error:', error);
+      throw error;
+    }
+  });
 };

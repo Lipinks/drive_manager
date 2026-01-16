@@ -135,7 +135,8 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
                 onClick={() => handleDelete(index)} 
                 className="delete-star-btn"
                 aria-label="Delete star"
-              >x
+                title="Delete star"
+              >🚮
               </button>
             </div>
             <div className="star-info">

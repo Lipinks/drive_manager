@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import './VideosPage.css';
 import EditVidDialog from './EditVidDialog/EditVidDialog';
 
@@ -9,6 +9,8 @@ const VideosPage = ({starName}) => {
   const [selectedTag, setSelectedTag] = useState('');
   const [editingVideo, setEditingVideo] = useState(null);
   const [showEditVidModal, setShowEditVidModal] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterRef = useRef(null);
 
   useEffect(() => {
     const loadData = () => {
@@ -50,10 +52,6 @@ const VideosPage = ({starName}) => {
     );
   }, [selectedTag, videos]);
 
-  var handleTagChange = useCallback((e) => {
-    setSelectedTag(e.target.value);
-  }, []);
-
   var handleTagClick = useCallback((tag) => {
     setSelectedTag(tag);
   }, []);
@@ -63,6 +61,9 @@ const VideosPage = ({starName}) => {
   }, []);
 
   var handleEditVideo = (favId, updatedData, videoStarName) => {
+    console.log('Editing video:', favId, updatedData, videoStarName);
+    console.log('videoDuration in updatedData:', updatedData.videoDuration);
+    
     var updatedVideos = videos.map(fav => 
       fav.id === favId ? { ...fav, ...updatedData } : fav
     );
@@ -76,6 +77,8 @@ const VideosPage = ({starName}) => {
     var updatedStarFavorites = starFavorites.map(fav => 
       fav.id === favId ? { ...fav, ...updatedData } : fav
     );
+    
+    console.log('Updated star favorites:', updatedStarFavorites);
     
     // Save only the updated star's favorites back
     currentFavs[videoStarName.toLowerCase()] = updatedStarFavorites;
@@ -104,26 +107,71 @@ const VideosPage = ({starName}) => {
     }
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilterDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  var handleFilterSelect = useCallback((tag) => {
+    setSelectedTag(tag);
+    setShowFilterDropdown(false);
+  }, []);
+
 
   return (
     <div className={`videos-page ${starName === '' ? 'with-header-padding' : ''}`}>
-      <div className="filter-section">
-        <label htmlFor="tag-filter" className="filter-label">
-          Filter by Category:
-        </label>
-        <select 
-          id="tag-filter" 
-          value={selectedTag} 
-          onChange={handleTagChange}
-          className="tag-filter-select"
-        >
-          <option value="">All Categories</option>
-          {availableTags.map(tag => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
-          ))}
-        </select>
+      <div className="filter-section" ref={filterRef}>
+        <div className='filter-section-middle'>
+          <label className="filter-label">
+            Filter by Category:
+          </label>
+          <div className="custom-filter-dropdown">
+            <button 
+              className="filter-dropdown-trigger"
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            >
+              <span className={selectedTag ? 'selected-value' : 'placeholder-value'}>
+                {selectedTag || 'All Categories'}
+              </span>
+              <svg 
+                className={`dropdown-arrow ${showFilterDropdown ? 'open' : ''}`} 
+                width="12" 
+                height="12" 
+                viewBox="0 0 12 12"
+              >
+                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            
+            {showFilterDropdown && (
+              <div className="filter-dropdown-menu">
+                <div 
+                  className={`filter-option all-option ${!selectedTag ? 'active' : ''}`}
+                  onClick={() => handleFilterSelect('')}
+                >
+                  All Categories
+                </div>
+                <div className="filter-options-grid">
+                  {availableTags.map((tag, index) => (
+                    <div
+                      key={tag}
+                      className={`filter-option-tag ${selectedTag === tag ? 'active' : ''}`}
+                      onClick={() => handleFilterSelect(tag)}
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {filteredFavorites.length === 0 ? (
@@ -193,6 +241,16 @@ const VideoCard = React.memo(({ favorite, selectedTag, onTagClick, onImageError,
         </svg>
       </button>
     </div>
+    {favorite.videoDuration && (
+      <div className="video-duration-tag">
+        {favorite.videoDuration}
+      </div>
+    )}
+    {favorite.isVPN && (
+      <div className="video-vpn-tag">
+        VPN
+      </div>
+    )}
     <div className="card-image">
       <img 
         src={favorite.imageUrl} 
