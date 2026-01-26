@@ -149,9 +149,6 @@
     content: "⭐";
 }
 
-.insta-btn::after {
-    content: "📷";
-}
 
 .signout-btn::after {
     content: "➡️";

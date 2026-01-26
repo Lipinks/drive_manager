@@ -10,7 +10,23 @@ const VideosPage = ({starName}) => {
   const [editingVideo, setEditingVideo] = useState(null);
   const [showEditVidModal, setShowEditVidModal] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [showOrderDropdown, setShowOrderDropdown] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState('new');
   const filterRef = useRef(null);
+  const sortRef = useRef(null);
+  const orderRef = useRef(null);
+
+  // Shuffle array function
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   useEffect(() => {
     const loadData = () => {
@@ -31,6 +47,7 @@ const VideosPage = ({starName}) => {
           var starNameLowerCase = starName.toLowerCase();
           flattened = (videosData[starNameLowerCase] || []).map(favorite => ({ ...favorite, starName: starNameLowerCase }));
         }
+        // Shuffle videos on load
         setVideos(flattened);
       }
       
@@ -44,25 +61,42 @@ const VideosPage = ({starName}) => {
     loadData();
   }, [starName]);
 
-  // Filter videos based on selected tag.
+  const handleShuffle = () => {
+    setVideos(shuffleArray(videos));
+  };
+
+  // Filter and sort videos based on selected tag and sort option.
   var filteredFavorites = useMemo(() => {
-    if (!selectedTag) return videos;
-    return videos.filter(favorite => 
-      favorite.tags?.includes(selectedTag)
-    );
-  }, [selectedTag, videos]);
+    let result = videos;
+    
+    // Apply tag filter
+    if (selectedTag) {
+      result = result.filter(favorite => 
+        favorite.tags?.includes(selectedTag)
+      );
+    }
+    
+    // Apply sorting
+    if (selectedSort) {
+      result = [...result].sort((a, b) => {
+        const dateA = new Date(selectedSort === 'creation' ? a.creation : a.modification) || 0;
+        const dateB = new Date(selectedSort === 'creation' ? b.creation : b.modification) || 0;
+        return selectedOrder === 'new' ? dateB - dateA : dateA - dateB;
+      });
+    }
+    
+    return result;
+  }, [selectedTag, selectedSort, selectedOrder, videos]);
 
   var handleTagClick = useCallback((tag) => {
     setSelectedTag(tag);
   }, []);
 
   var handleImageError = useCallback((e) => {
-    e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+    
   }, []);
 
   var handleEditVideo = (favId, updatedData, videoStarName) => {
-    console.log('Editing video:', favId, updatedData, videoStarName);
-    console.log('videoDuration in updatedData:', updatedData.videoDuration);
     
     var updatedVideos = videos.map(fav => 
       fav.id === favId ? { ...fav, ...updatedData } : fav
@@ -77,8 +111,6 @@ const VideosPage = ({starName}) => {
     var updatedStarFavorites = starFavorites.map(fav => 
       fav.id === favId ? { ...fav, ...updatedData } : fav
     );
-    
-    console.log('Updated star favorites:', updatedStarFavorites);
     
     // Save only the updated star's favorites back
     currentFavs[videoStarName.toLowerCase()] = updatedStarFavorites;
@@ -107,11 +139,17 @@ const VideosPage = ({starName}) => {
     }
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilterDropdown(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target)) {
+        setShowSortDropdown(false);
+      }
+      if (orderRef.current && !orderRef.current.contains(event.target)) {
+        setShowOrderDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -123,6 +161,25 @@ const VideosPage = ({starName}) => {
     setShowFilterDropdown(false);
   }, []);
 
+  var handleSortSelect = useCallback((sortOption) => {
+    setSelectedSort(sortOption);
+    setShowSortDropdown(false);
+  }, []);
+
+  var handleOrderSelect = useCallback((orderOption) => {
+    setSelectedOrder(orderOption);
+    setShowOrderDropdown(false);
+  }, []);
+
+  const sortOptions = [
+    { value: 'creation', label: 'Creation Time' },
+    { value: 'modification', label: 'Modified Time' }
+  ];
+
+  const orderOptions = [
+    { value: 'new', label: 'Newest First' },
+    { value: 'old', label: 'Oldest First' }
+  ];
 
   return (
     <div className={`videos-page ${starName === '' ? 'with-header-padding' : ''}`}>
@@ -171,6 +228,80 @@ const VideosPage = ({starName}) => {
               </div>
             )}
           </div>
+
+          <div className="custom-sort-dropdown" ref={sortRef}>
+            <label className="filter-label">Sort by:</label>
+            <button 
+              className="sort-dropdown-trigger"
+              onClick={() => setShowSortDropdown(!showSortDropdown)}
+            >
+              <span className={selectedSort ? 'selected-value' : 'placeholder-value'}>
+                {sortOptions.find(opt => opt.value === selectedSort)?.label || 'None'}
+              </span>
+              <svg 
+                className={`dropdown-arrow ${showSortDropdown ? 'open' : ''}`} 
+                width="12" 
+                height="12" 
+                viewBox="0 0 12 12"
+              >
+                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            
+            {showSortDropdown && (
+              <div className="sort-dropdown-menu">
+                {sortOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`sort-option ${selectedSort === option.value ? 'active' : ''}`}
+                    onClick={() => handleSortSelect(option.value)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="custom-sort-dropdown" ref={orderRef}>
+            <label className="filter-label">Order:</label>
+            <button 
+              className="sort-dropdown-trigger"
+              onClick={() => setShowOrderDropdown(!showOrderDropdown)}
+            >
+              <span className="selected-value">
+                {orderOptions.find(opt => opt.value === selectedOrder)?.label}
+              </span>
+              <svg 
+                className={`dropdown-arrow ${showOrderDropdown ? 'open' : ''}`} 
+                width="12" 
+                height="12" 
+                viewBox="0 0 12 12"
+              >
+                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            
+            {showOrderDropdown && (
+              <div className="sort-dropdown-menu">
+                {orderOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`sort-option ${selectedOrder === option.value ? 'active' : ''}`}
+                    onClick={() => handleOrderSelect(option.value)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button 
+            className="shuffle-button"
+            onClick={handleShuffle}
+            title="Shuffle videos"
+          >🔀</button>
         </div>
       </div>
 

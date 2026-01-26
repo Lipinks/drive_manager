@@ -153,10 +153,17 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
       return;
     }
 
+    var now = new Date();
+    var istOptions = { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+    var istParts = new Intl.DateTimeFormat('en-CA', istOptions).formatToParts(now);
+    var getPart = (type) => istParts.find(p => p.type === type)?.value || '';
+    var currentDateTime = `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}`;
+
     const favorite = {
       ...newFavorite,
       id: Date.now(),
-      tags: newFavorite.tags || []
+      tags: newFavorite.tags || [],
+      creation: currentDateTime
     };
 
     var updatedFavorites = [...favorites, favorite];

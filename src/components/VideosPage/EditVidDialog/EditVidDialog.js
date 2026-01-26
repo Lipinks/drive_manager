@@ -8,6 +8,8 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
     url: '',
     videoDuration: '',
     isVPN: false,
+    creation: '',
+    modification: '',
     tags: []
   });
 
@@ -19,6 +21,8 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
         url: editingVideo.url || '',
         videoDuration: editingVideo.videoDuration || '',
         isVPN: editingVideo.isVPN || false,
+        creation: editingVideo.creation || '',
+        modification: editingVideo.modification || '',
         tags: editingVideo.tags || []
       });
     }
@@ -34,7 +38,16 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
   };
 
   const handleSave = () => {
-    handleEditFavorite(editingVideo.id, formData, editingVideo.starName);
+    var now = new Date();
+    var istOptions = { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+    var istParts = new Intl.DateTimeFormat('en-CA', istOptions).formatToParts(now);
+    var getPart = (type) => istParts.find(p => p.type === type)?.value || '';
+    var currentDateTime = `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}`;
+    var updatedFormData = {
+      ...formData,
+      modification: currentDateTime
+    };
+    handleEditFavorite(editingVideo.id, updatedFormData, editingVideo.starName);
   };
 
   const handleAddTag = (tag) => {
@@ -124,9 +137,7 @@ const EditVidDialog = ({ editingVideo, handleEditFavorite, setEditingVideo, tags
             <span className="vpn-checkbox-text">{formData.isVPN ? 'Yes' : 'No'}</span>
           </label>
         </div>
-      </div>
-
-      
+      </div>      
       
       <div className="tag-section">
         <div className="label-content">Selected Tags</div>

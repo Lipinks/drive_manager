@@ -10,7 +10,7 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
   const [newStar, setNewStar] = useState({
     Name: '',
     Image_Link: '',
-    Tags: []
+    Tags: [],
   });
   const [availableTags, setAvailableTags] = useState([]);
   const [newTag, setNewTag] = useState('');

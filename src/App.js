@@ -7,7 +7,6 @@ import Header from './components/Header/Header';
 import StarManager from './components/StarManager/StarManager';
 import StarDetails from './components/StarDetails/StarDetails';
 import VideosPage from './components/VideosPage/VideosPage';
-import InstaPage from './components/InstaPage/InstaPage';
 import './App.css';
 
 // Component to scroll to top on route change
@@ -162,7 +161,6 @@ const BigAndBingApp = () => {
                 }}
               />
             } />
-            <Route path="/insta" element={<InstaPage />} />
             <Route path="/videos" element={<VideosPage starName={''} />} />
           </Routes>
         )}
