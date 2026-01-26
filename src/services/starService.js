@@ -4,7 +4,8 @@ import { withTokenRefresh } from './authService';
 const FILES = {
   STAR: 'star.json',
   FAVORITES: 'favorites.json',
-  TAGS: 'tags.json'
+  TAGS: 'tags.json',
+  YOUTUBE: 'youtube.json'
 };
 
 const validateData = (data, type = 'array') => {
@@ -27,6 +28,7 @@ export const saveStarFile = async (accessToken) => {
       await saveFile(token, FILES.STAR, starsArray);
       await saveFile(token, FILES.FAVORITES, JSON.parse(localStorage.getItem('favorites')));
       await saveFile(token, FILES.TAGS, JSON.parse(localStorage.getItem('tags')));
+      await saveFile(token, FILES.YOUTUBE, JSON.parse(localStorage.getItem('youtube')));
     } catch (error) {
       console.error('Save error:', error);
       throw error;
@@ -108,10 +110,11 @@ const fetchFile = async (accessToken, fileName) => {
 export const fetchStarFile = async (accessToken) => {
   return withTokenRefresh(async (token) => {
     try {
-      const [starsData, favoritesData, tagsData] = await Promise.all([
+      const [starsData, favoritesData, tagsData, youtubeData] = await Promise.all([
         fetchFile(token, FILES.STAR),
         fetchFile(token, FILES.FAVORITES),
-        fetchFile(token, FILES.TAGS)
+        fetchFile(token, FILES.TAGS),
+        fetchFile(token, FILES.YOUTUBE)
       ]);
 
       // Ensure consistent array format for stars
@@ -122,6 +125,7 @@ export const fetchStarFile = async (accessToken) => {
       stars.sort();
       localStorage.setItem('favorites', JSON.stringify(favoritesData || {}));
       localStorage.setItem('tags', JSON.stringify(tagsData || []));
+      localStorage.setItem('youtube', JSON.stringify(youtubeData || []));
 
       return stars;
     } catch (error) {
@@ -157,16 +161,21 @@ export const syncWithDrive = async (accessToken) => {
       const starsRaw = JSON.parse(localStorage.getItem('stars') || '[]');
       const favoritesRaw = JSON.parse(localStorage.getItem('favorites') || '{}');
       const tagsRaw = JSON.parse(localStorage.getItem('tags') || '[]');
+      const youtubeLinks = JSON.parse(localStorage.getItem('youtube') || '[]');
+
+      // validate data
 
       const stars = validateData(starsRaw, 'array');
       const favorites = validateData(favoritesRaw, 'object');
       const tags = validateData(tagsRaw, 'array');
+      const youtube = validateData(youtubeLinks, 'array');
 
       // upload in parallel (order doesn't matter)
       await Promise.all([
         saveFile(token, FILES.STAR, stars),
         saveFile(token, FILES.FAVORITES, favorites),
-        saveFile(token, FILES.TAGS, tags)
+        saveFile(token, FILES.TAGS, tags),
+        saveFile(token, FILES.YOUTUBE, youtube)
       ]);
     } catch (error) {
       console.error('Sync error:', error);
