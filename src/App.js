@@ -8,6 +8,7 @@ import StarManager from './components/StarManager/StarManager';
 import StarDetails from './components/StarDetails/StarDetails';
 import VideosPage from './components/VideosPage/VideosPage';
 import YoutubePage from './components/youtube/youtube';
+import Gallery from './components/gallery/gallery';
 import './App.css';
 
 // Component to scroll to top on route change
@@ -164,6 +165,7 @@ const BigAndBingApp = () => {
             } />
             <Route path="/videos" element={<VideosPage starName={''} />} />
             <Route path="/youtube" element={<YoutubePage/>} />
+            <Route path="/gallery" element={<Gallery accessToken={accessToken} />} />
           </Routes>
         )}
       </div>
