@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import * as starService from './services/starService';
+import * as storage from './utils/storage';
 import LoginPage from './components/LoginPage/LoginPage';
 import LoadingPage from './components/LoadingPage/LoadingPage';
 import Header from './components/Header/Header';
@@ -23,14 +24,11 @@ const ScrollToTop = () => {
 };
 
 const BigAndBingApp = () => {
-  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+  const [accessToken, setAccessToken] = useState(storage.getRaw(storage.KEYS.ACCESS_TOKEN));
   const [tokenClient, setTokenClient] = useState(null);
   const [showAddStar, setShowAddStar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [stars, setStars] = useState(() => {
-    const savedStars = localStorage.getItem('stars');
-    return savedStars ? JSON.parse(savedStars) : [];
-  });
+  const [stars, setStars] = useState(() => storage.getItem(storage.KEYS.STARS, []));
 
   const initTokenClient = useCallback(() => {
     if (window.google && window.google.accounts) {
@@ -49,7 +47,7 @@ const BigAndBingApp = () => {
       return;
     }
     setAccessToken(response.access_token);
-    localStorage.setItem('accessToken', response.access_token);
+    storage.setRaw(storage.KEYS.ACCESS_TOKEN, response.access_token);
   };
 
   useEffect(() => {
@@ -83,7 +81,7 @@ const BigAndBingApp = () => {
       );
       
       setStars(sortedStars);
-      localStorage.setItem('stars', JSON.stringify(sortedStars));
+      storage.setItem(storage.KEYS.STARS, sortedStars);
     } catch (error) {
       console.error('Error fetching stars - handleFetchData:', error);
       alert('Failed to fetch data from Drive');
@@ -97,7 +95,7 @@ const BigAndBingApp = () => {
       console.log('Updating stars as received from child component...');
       setStars(newStars);
       console.log('Stars updated in state and localStorage.');
-      localStorage.setItem('stars', JSON.stringify(newStars));
+      storage.setItem(storage.KEYS.STARS, newStars);
     }
   };
 
@@ -123,7 +121,7 @@ const BigAndBingApp = () => {
       window.google.accounts.id.disableAutoSelect();
     }
     setAccessToken(null);
-    localStorage.removeItem('accessToken');
+    storage.removeItem(storage.KEYS.ACCESS_TOKEN);
   };
 
   if (!accessToken) {

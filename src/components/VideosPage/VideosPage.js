@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import './VideosPage.css';
 import EditVidDialog from './EditVidDialog/EditVidDialog';
+import * as storage from '../../utils/storage';
 
-const VideosPage = ({starName}) => {
+const VideosPage = ({starName, starImage, onAddVideo, onEditStar}) => {
 
   const [videos, setVideos] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -14,6 +15,9 @@ const VideosPage = ({starName}) => {
   const [showOrderDropdown, setShowOrderDropdown] = useState(false);
   const [selectedSort, setSelectedSort] = useState('');
   const [selectedOrder, setSelectedOrder] = useState('new');
+  const [selectedStar, setSelectedStar] = useState('');
+  const [starNames, setStarNames] = useState([]);
+  const [starSearch, setStarSearch] = useState('');
   const filterRef = useRef(null);
   const sortRef = useRef(null);
   const orderRef = useRef(null);
@@ -30,15 +34,18 @@ const VideosPage = ({starName}) => {
 
   useEffect(() => {
     const loadData = () => {
-      var [storedVideos, storedTags] = [
-        localStorage.getItem('favorites'),
-        localStorage.getItem('tags')
-      ];
+      var videosData = storage.getItem(storage.KEYS.FAVORITES, null);
+      var tagsData = storage.getItem(storage.KEYS.TAGS, null);
       
-      if (storedVideos) {
-        var videosData = JSON.parse(storedVideos);
+      if (videosData) {
         var flattened = [];
         if(starName===''){
+          // Extract star names that have videos
+          var names = Object.keys(videosData)
+            .filter(name => videosData[name] && videosData[name].length > 0)
+            .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+          setStarNames(names);
+
           flattened = Object.entries(videosData).flatMap(([starName, favorites]) =>
             favorites.map(favorite => ({ ...favorite, starName }))
           );
@@ -51,10 +58,9 @@ const VideosPage = ({starName}) => {
         setVideos(flattened);
       }
       
-      if (storedTags) {
-        var tags = JSON.parse(storedTags);
-        if (Array.isArray(tags)) {
-          setAvailableTags(tags.sort());
+      if (tagsData) {
+        if (Array.isArray(tagsData)) {
+          setAvailableTags(tagsData.sort());
         }
       }
     };
@@ -65,9 +71,14 @@ const VideosPage = ({starName}) => {
     setVideos(shuffleArray(videos));
   };
 
-  // Filter and sort videos based on selected tag and sort option.
+  // Filter and sort videos based on selected star, tag and sort option.
   var filteredFavorites = useMemo(() => {
     let result = videos;
+
+    // Apply star filter (only on main videos tab)
+    if (starName === '' && selectedStar) {
+      result = result.filter(favorite => favorite.starName === selectedStar);
+    }
     
     // Apply tag filter
     if (selectedTag) {
@@ -86,7 +97,7 @@ const VideosPage = ({starName}) => {
     }
     
     return result;
-  }, [selectedTag, selectedSort, selectedOrder, videos]);
+  }, [selectedTag, selectedSort, selectedOrder, selectedStar, starName, videos]);
 
   var handleTagClick = useCallback((tag) => {
     setSelectedTag(tag);
@@ -103,8 +114,8 @@ const VideosPage = ({starName}) => {
     );
     setVideos(updatedVideos);
     
-    // Get the current favorites from localStorage
-    var currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
+    // Get the current favorites from cache
+    var currentFavs = storage.getItem(storage.KEYS.FAVORITES, {});
     
     // Get only the videos for this specific star and update the matching one
     var starFavorites = currentFavs[videoStarName.toLowerCase()] || [];
@@ -114,7 +125,7 @@ const VideosPage = ({starName}) => {
     
     // Save only the updated star's favorites back
     currentFavs[videoStarName.toLowerCase()] = updatedStarFavorites;
-    localStorage.setItem('favorites', JSON.stringify(currentFavs));
+    storage.setItem(storage.KEYS.FAVORITES, currentFavs);
     
     setEditingVideo(null);
     setShowEditVidModal(false);
@@ -126,8 +137,8 @@ const VideosPage = ({starName}) => {
       var updatedVideos = videos.filter(fav => fav.id !== id);
       setVideos(updatedVideos);
       
-      // Get the current favorites from localStorage
-      var currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
+      // Get the current favorites from cache
+      var currentFavs = storage.getItem(storage.KEYS.FAVORITES, {});
       
       // Get only the videos for this specific star and remove the matching one
       var starFavorites = currentFavs[videoStarName.toLowerCase()] || [];
@@ -135,7 +146,7 @@ const VideosPage = ({starName}) => {
       
       // Save only the updated star's favorites back
       currentFavs[videoStarName.toLowerCase()] = updatedStarFavorites;
-      localStorage.setItem('favorites', JSON.stringify(currentFavs));
+      storage.setItem(storage.KEYS.FAVORITES, currentFavs);
     }
   };
 
@@ -181,133 +192,153 @@ const VideosPage = ({starName}) => {
     { value: 'old', label: 'Oldest First' }
   ];
 
-  return (
-    <div className={`videos-page ${starName === '' ? 'with-header-padding' : ''}`}>
-      <div className="filter-section" ref={filterRef}>
-        <div className='filter-section-middle'>
-          <label className="filter-label">
-            Filter by Category:
-          </label>
-          <div className="custom-filter-dropdown">
-            <button 
-              className="filter-dropdown-trigger"
-              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            >
-              <span className={selectedTag ? 'selected-value' : 'placeholder-value'}>
-                {selectedTag || 'All Categories'}
-              </span>
-              <svg 
-                className={`dropdown-arrow ${showFilterDropdown ? 'open' : ''}`} 
-                width="12" 
-                height="12" 
-                viewBox="0 0 12 12"
-              >
-                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            
-            {showFilterDropdown && (
-              <div className="filter-dropdown-menu">
-                <div 
-                  className={`filter-option all-option ${!selectedTag ? 'active' : ''}`}
-                  onClick={() => handleFilterSelect('')}
-                >
-                  All Categories
-                </div>
-                <div className="filter-options-grid">
-                  {availableTags.map((tag, index) => (
-                    <div
-                      key={tag}
-                      className={`filter-option-tag ${selectedTag === tag ? 'active' : ''}`}
-                      onClick={() => handleFilterSelect(tag)}
-                    >
-                      {tag}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+  const filteredStarNames = useMemo(() => {
+    if (!starSearch.trim()) return starNames;
+    return starNames.filter(name => name.toLowerCase().includes(starSearch.toLowerCase()));
+  }, [starNames, starSearch]);
 
-          <div className="custom-sort-dropdown" ref={sortRef}>
-            <label className="filter-label">Sort by:</label>
-            <button 
-              className="sort-dropdown-trigger"
-              onClick={() => setShowSortDropdown(!showSortDropdown)}
-            >
-              <span className={selectedSort ? 'selected-value' : 'placeholder-value'}>
-                {sortOptions.find(opt => opt.value === selectedSort)?.label || 'None'}
-              </span>
-              <svg 
-                className={`dropdown-arrow ${showSortDropdown ? 'open' : ''}`} 
-                width="12" 
-                height="12" 
-                viewBox="0 0 12 12"
-              >
-                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            
-            {showSortDropdown && (
-              <div className="sort-dropdown-menu">
-                {sortOptions.map((option) => (
-                  <div
-                    key={option.value}
-                    className={`sort-option ${selectedSort === option.value ? 'active' : ''}`}
-                    onClick={() => handleSortSelect(option.value)}
-                  >
-                    {option.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+  const handleStarSelect = useCallback((name) => {
+    setSelectedStar(prev => prev === name ? '' : name);
+  }, []);
 
-          <div className="custom-sort-dropdown" ref={orderRef}>
-            <label className="filter-label">Order:</label>
-            <button 
-              className="sort-dropdown-trigger"
-              onClick={() => setShowOrderDropdown(!showOrderDropdown)}
-            >
-              <span className="selected-value">
-                {orderOptions.find(opt => opt.value === selectedOrder)?.label}
-              </span>
-              <svg 
-                className={`dropdown-arrow ${showOrderDropdown ? 'open' : ''}`} 
-                width="12" 
-                height="12" 
-                viewBox="0 0 12 12"
-              >
-                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            
-            {showOrderDropdown && (
-              <div className="sort-dropdown-menu">
-                {orderOptions.map((option) => (
-                  <div
-                    key={option.value}
-                    className={`sort-option ${selectedOrder === option.value ? 'active' : ''}`}
-                    onClick={() => handleOrderSelect(option.value)}
-                  >
-                    {option.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+  const isMainVideosTab = starName === '';
 
+  // Filter/Sort/Order controls (shared between sidebar and inline)
+  const renderFilterControls = () => (
+    <>
+      <div className="sidebar-control-group" ref={filterRef}>
+        <label className="filter-label">Filter by Category:</label>
+        <div className="custom-filter-dropdown">
           <button 
-            className="shuffle-button"
-            onClick={handleShuffle}
-            title="Shuffle videos"
-          >🔀</button>
+            className="filter-dropdown-trigger"
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+          >
+            <span className={selectedTag ? 'selected-value' : 'placeholder-value'}>
+              {selectedTag || 'All Categories'}
+            </span>
+            <svg 
+              className={`dropdown-arrow ${showFilterDropdown ? 'open' : ''}`} 
+              width="12" 
+              height="12" 
+              viewBox="0 0 12 12"
+            >
+              <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          
+          {showFilterDropdown && (
+            <div className="filter-dropdown-menu">
+              <div 
+                className={`filter-option all-option ${!selectedTag ? 'active' : ''}`}
+                onClick={() => handleFilterSelect('')}
+              >
+                All Categories
+              </div>
+              <div className="filter-options-grid">
+                {availableTags.map((tag, index) => (
+                  <div
+                    key={tag}
+                    className={`filter-option-tag ${selectedTag === tag ? 'active' : ''}`}
+                    onClick={() => handleFilterSelect(tag)}
+                  >
+                    {tag}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
+      <div className="sidebar-control-group" ref={sortRef}>
+        <label className="filter-label">Sort by:</label>
+        <div className="custom-sort-dropdown">
+          <button 
+            className="sort-dropdown-trigger"
+            onClick={() => setShowSortDropdown(!showSortDropdown)}
+          >
+            <span className={selectedSort ? 'selected-value' : 'placeholder-value'}>
+              {sortOptions.find(opt => opt.value === selectedSort)?.label || 'None'}
+            </span>
+            <svg 
+              className={`dropdown-arrow ${showSortDropdown ? 'open' : ''}`} 
+              width="12" 
+              height="12" 
+              viewBox="0 0 12 12"
+            >
+              <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          
+          {showSortDropdown && (
+            <div className="sort-dropdown-menu">
+              {sortOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className={`sort-option ${selectedSort === option.value ? 'active' : ''}`}
+                  onClick={() => handleSortSelect(option.value)}
+                >
+                  {option.label}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="sidebar-control-group" ref={orderRef}>
+        <label className="filter-label">Order:</label>
+        <div className="custom-sort-dropdown">
+          <button 
+            className="sort-dropdown-trigger"
+            onClick={() => setShowOrderDropdown(!showOrderDropdown)}
+          >
+            <span className="selected-value">
+              {orderOptions.find(opt => opt.value === selectedOrder)?.label}
+            </span>
+            <svg 
+              className={`dropdown-arrow ${showOrderDropdown ? 'open' : ''}`} 
+              width="12" 
+              height="12" 
+              viewBox="0 0 12 12"
+            >
+              <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          
+          {showOrderDropdown && (
+            <div className="sort-dropdown-menu">
+              {orderOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className={`sort-option ${selectedOrder === option.value ? 'active' : ''}`}
+                  onClick={() => handleOrderSelect(option.value)}
+                >
+                  {option.label}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <button 
+        className="shuffle-button"
+        onClick={handleShuffle}
+        title="Shuffle videos"
+      >🔀 Shuffle</button>
+    </>
+  );
+
+  const renderVideoContent = () => (
+    <>
       {filteredFavorites.length === 0 ? (
         <p className="no-data">
-          {selectedTag ? `No videos found for category "${selectedTag}"` : 'No videos found'}
+          {selectedStar
+            ? `No videos found for "${selectedStar}"`
+            : selectedTag
+            ? `No videos found for category "${selectedTag}"`
+            : 'No videos found'}
         </p>
       ) : (
         <div className="videos-grid">
@@ -327,10 +358,80 @@ const VideosPage = ({starName}) => {
           ))}
         </div>
       )}
+    </>
+  );
+
+  return (
+    <div className={`videos-page with-sidebar ${isMainVideosTab ? 'with-header-padding' : ''}`}>
+      <aside className="videos-left-sidebar">
+        {!isMainVideosTab && starImage && (
+          <div className="sidebar-star-profile">
+            <div className="sidebar-star-image">
+              <img src={starImage} alt={starName} />
+            </div>
+            <h2 className="sidebar-star-name">{starName}</h2>
+            <div className="sidebar-star-actions">
+              <button className="sidebar-action-btn sidebar-add-vid-btn" onClick={onAddVideo}>
+                📺 Add Video
+              </button>
+              <button className="sidebar-action-btn sidebar-edit-star-btn" onClick={onEditStar}>
+                ✂️ Edit Star
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="sidebar-controls-section">
+          <h3 className="sidebar-section-title">Controls</h3>
+          {renderFilterControls()}
+        </div>
+        {isMainVideosTab && (
+          <div className="sidebar-stars-section">
+            <h3 className="sidebar-section-title">Stars ({starNames.length})</h3>
+            <div className="sidebar-star-search">
+              <input
+                type="text"
+                placeholder="Search stars..."
+                value={starSearch}
+                onChange={(e) => setStarSearch(e.target.value)}
+                className="star-search-input"
+              />
+              {starSearch && (
+                <button className="star-search-clear" onClick={() => setStarSearch('')}>×</button>
+              )}
+            </div>
+            <div
+              className={`sidebar-star-item all-stars ${selectedStar === '' ? 'active' : ''}`}
+              onClick={() => setSelectedStar('')}
+            >
+              All Stars
+              <span className="star-video-count">{videos.length}</span>
+            </div>
+            <div className="sidebar-star-list">
+              {filteredStarNames.map((name) => (
+                <div
+                  key={name}
+                  className={`sidebar-star-item ${selectedStar === name ? 'active' : ''}`}
+                  onClick={() => handleStarSelect(name)}
+                  title={name}
+                >
+                  <span className="star-item-name">{name}</span>
+                  <span className="star-video-count">
+                    {videos.filter(v => v.starName === name).length}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+
+      <div className="videos-main-content">
+        {renderVideoContent()}
+      </div>
 
       {editingVideo && showEditVidModal &&(
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="edit-vid-overlay">
+          <div className="edit-vid-dialog">
             <EditVidDialog 
               editingVideo={editingVideo}
               handleEditFavorite={handleEditVideo}
@@ -343,7 +444,7 @@ const VideosPage = ({starName}) => {
                 if (newTag.trim() && !availableTags.includes(newTag.trim())) {
                   var updatedTags = [...availableTags, newTag.trim()];
                   setAvailableTags(updatedTags);
-                  localStorage.setItem('tags', JSON.stringify(updatedTags));
+                  storage.setItem(storage.KEYS.TAGS, updatedTags);
                 }
               }}
             />

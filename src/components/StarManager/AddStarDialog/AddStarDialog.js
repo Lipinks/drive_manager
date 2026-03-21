@@ -2,8 +2,8 @@ import './AddStarDialog.css';
 
 const AddStarDialog = ({newStar,handleInputChange,handleAddTagToStar,handleRemoveTag,handleCreateNewTag,handleKeyPress,closeAddStarModal,handleSave,tags,newTag,setNewTag})=> {
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="add-star-overlay">
+      <div className="add-star-dialog">
         <div className="name-input-section">
           <div className='add-new-star'>Add New Star</div>
           <input

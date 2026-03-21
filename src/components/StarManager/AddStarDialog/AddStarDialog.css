@@ -1,4 +1,6 @@
-/* Golden Theme AddStarDialog.css - COMPACT VERSION */
+/* ====================================
+   ADD STAR DIALOG - Namespaced
+   ==================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 :root {
@@ -8,8 +10,8 @@
   --cream-bg: #fef9e7;
 }
 
-/* Modal Overlay - Fixed to prevent body scroll */
-.modal-overlay {
+/* -- Overlay -------------------------- */
+.add-star-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -25,20 +27,19 @@
   overflow: auto;
 }
 
-/* Modal Content - Compact Height */
-.modal-content {
+/* -- Dialog Container ----------------- */
+.add-star-dialog {
   background: linear-gradient(135deg, #fff9e6 0%, var(--cream-bg) 100%);
   border-radius: 16px;
   padding: 24px;
   width: 100%;
-  max-height: 85vh; /* Changed from 90vh to prevent scroll */
+  max-height: 85vh;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 215, 0, 0.2);
   position: relative;
-  overflow: hidden;
 }
 
-.modal-content::before {
+.add-star-dialog::before {
   content: "";
   position: absolute;
   top: 0;
@@ -48,26 +49,24 @@
   background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary));
 }
 
-/* Title - Compact */
-.modal-content h2 {
-  margin: 0 0 16px 0;
-  font-size: 22px;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
+/* -- Title ---------------------------- */
+.add-star-dialog .add-new-star {
+  font-size: 25px;
+  font-weight: bolder;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Compact Form Grid */
-.form-grid {
+/* -- Input Layout --------------------- */
+.add-star-dialog .name-input-section {
   display: grid;
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: 1fr 3fr 3fr;
 }
 
-/* Compact Inputs */
-.modal-content input[type="text"],
-.modal-content input[type="url"] {
+/* -- Inputs --------------------------- */
+.add-star-dialog input[type="text"],
+.add-star-dialog input[type="url"] {
   width: 100%;
   padding: 10px 14px;
   border: 1.5px solid #e8e0c5;
@@ -79,154 +78,27 @@
   box-sizing: border-box;
 }
 
-.modal-content input:focus {
+.add-star-dialog input:focus {
   outline: none;
   border-color: var(--gold-primary);
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
 }
 
-.modal-content input::placeholder {
+.add-star-dialog input::placeholder {
   color: #a0a0a0;
   font-size: 13px;
 }
 
-/* Compact Tag Section */
-.tag-section {
-  margin: 16px 0;
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid rgba(218, 165, 32, 0.15);
-}
-
-.tag-section h3 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gold-dark);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.tag-section h3::before {
-  content: "#";
-  font-size: 12px;
-}
-
-/* Compact Tag Containers */
-.selected-tags,
-.available-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  min-height: 44px;
-  max-height: 88px;
-  overflow-y: auto;
-}
-
-.selected-tags:empty::after,
-.available-tags:empty::after {
-  content: "No tags";
-  color: #b0b0b0;
-  font-size: 13px;
-  font-style: italic;
-}
-
-/* Compact Tags */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: 24px;
-  line-height: 1;
-}
-
-.selected-tag {
-  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
-  color: #1a1a1a;
-  box-shadow: 0 2px 6px rgba(218, 165, 32, 0.3);
-}
-
-.available-tag {
-  background: #f0f0f0;
-  color: #666;
-  border: 1px solid #ddd;
-}
-
-.tag:hover {
-  transform: translateY(-1px);
-}
-
-.remove-icon,
-.add-icon {
-  margin-left: 4px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* Compact New Tag Input */
-.create-new-tag {
+/* -- Buttons -------------------------- */
+.add-star-dialog .create-new-tag {
   display: flex;
   gap: 8px;
   margin-top: 12px;
   height: 36px;
 }
 
-.new-tag-input {
-  flex: 1;
-  padding: 0 12px;
-  border: 1.5px solid #e8e0c5;
-  border-radius: 6px;
-  font-size: 13px;
-  background: white;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.new-tag-input:focus {
-  outline: none;
-  border-color: var(--gold-primary);
-}
-
-.create-tag-btn {
-  padding: 0 16px;
-  background: var(--gold-dark);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  height: 100%;
-}
-
-.create-tag-btn:hover {
-  background: var(--gold-accent);
-}
-
-/* Compact Action Buttons - Moved to bottom but visible without scroll */
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(218, 165, 32, 0.2);
-}
-
-.save-btn,
-.cancel-btn {
+.add-star-dialog .save-btn,
+.add-star-dialog .cancel-btn {
   flex: 1;
   padding: 10px 16px;
   border: none;
@@ -238,67 +110,42 @@
   height: 38px;
 }
 
-.save-btn {
+.add-star-dialog .save-btn {
   background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
   color: #1a1a1a;
   box-shadow: 0 3px 8px rgba(218, 165, 32, 0.3);
 }
 
-.cancel-btn {
+.add-star-dialog .cancel-btn {
   background: #f5f5f5;
   color: #666;
   border: 1px solid #ddd;
 }
 
-.save-btn:hover,
-.cancel-btn:hover {
+.add-star-dialog .save-btn:hover,
+.add-star-dialog .cancel-btn:hover {
   transform: translateY(-1px);
 }
 
-.save-btn:active,
-.cancel-btn:active {
+.add-star-dialog .save-btn:active,
+.add-star-dialog .cancel-btn:active {
   transform: translateY(0);
 }
 
-/* Compact Scrollbars */
-.selected-tags::-webkit-scrollbar,
-.available-tags::-webkit-scrollbar {
-  width: 4px;
-}
-
-.selected-tags::-webkit-scrollbar-thumb,
-.available-tags::-webkit-scrollbar-thumb {
-  background: var(--gold-primary);
-  border-radius: 2px;
-}
-
-/* Responsive - Stack on very small screens */
+/* -- Responsive ----------------------- */
 @media (max-width: 480px) {
-  .modal-content {
+  .add-star-dialog {
     padding: 20px 16px;
     max-height: 90vh;
   }
-  
-  .modal-content h2 {
-    font-size: 20px;
-  }
-  
-  .modal-buttons {
-    flex-direction: column;
-  }
-  
-  .modal-buttons button {
-    width: 100%;
-  }
-  
-  .create-new-tag {
+
+  .add-star-dialog .create-new-tag {
     flex-direction: column;
     height: auto;
     gap: 6px;
   }
-  
-  .create-new-tag input,
-  .create-new-tag button {
+
+  .add-star-dialog .create-new-tag button {
     width: 100%;
     height: 32px;
   }

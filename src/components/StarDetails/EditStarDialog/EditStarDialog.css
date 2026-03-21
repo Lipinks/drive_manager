@@ -1,4 +1,9 @@
-.modal-overlay {
+/* ====================================
+   EDIT STAR DIALOG - Namespaced
+   ==================================== */
+
+/* -- Overlay -------------------------- */
+.edit-star-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,15 +15,16 @@
   align-items: center;
   z-index: 1000;
   padding: 20px;
-  animation: fadeIn 0.3s ease;
+  animation: esd-fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
+@keyframes esd-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.modal-container {
+/* -- Dialog Container ----------------- */
+.edit-star-dialog {
   background: white;
   border-radius: 20px;
   width: 100%;
@@ -26,21 +32,22 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   position: relative;
-  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: esd-slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes slideUp {
-  from { 
+@keyframes esd-slideUp {
+  from {
     opacity: 0;
     transform: translateY(30px) scale(0.95);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
-.modal-header {
+/* -- Header --------------------------- */
+.edit-star-header {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   padding: 25px 30px;
@@ -48,7 +55,7 @@
   overflow: hidden;
 }
 
-.modal-header h2 {
+.edit-star-header h2 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
@@ -57,11 +64,11 @@
   gap: 12px;
 }
 
-.modal-header h2 i {
+.edit-star-header h2 i {
   font-size: 1.3rem;
 }
 
-.header-decoration {
+.edit-star-header .header-decoration {
   position: absolute;
   top: -50px;
   right: -30px;
@@ -71,28 +78,29 @@
   border-radius: 50%;
 }
 
-.modal-content {
-  width: 1050px;
+/* -- Body ----------------------------- */
+.edit-star-body {
+  padding: 30px;
   background: #f8fafc;
 }
 
-.input-group {
+.edit-star-body .input-group {
   margin-bottom: 30px;
 }
 
-.input-label {
+.edit-star-body .input-label {
   margin-bottom: 10px;
   font-weight: 600;
   color: #334155;
   font-size: 0.95rem;
 }
 
-.input-label i {
+.edit-star-body .input-label i {
   color: #6366f1;
   width: 20px;
 }
 
-.input-wrapper {
+.edit-star-body .input-wrapper {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
@@ -101,25 +109,25 @@
   background: white;
 }
 
-.input-wrapper:hover {
+.edit-star-body .input-wrapper:hover {
   border-color: #c7d2fe;
 }
 
-.input-wrapper:focus-within {
+.edit-star-body .input-wrapper:focus-within {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.input-wrapper.disabled {
+.edit-star-body .input-wrapper.disabled {
   background: #f1f5f9;
   border-color: #e2e8f0;
 }
 
-.input-wrapper.disabled:hover {
+.edit-star-body .input-wrapper.disabled:hover {
   border-color: #e2e8f0;
 }
 
-.modal-content input {
+.edit-star-body input {
   width: 100%;
   padding: 16px 20px 16px 50px;
   border: none;
@@ -129,18 +137,18 @@
   outline: none;
 }
 
-.modal-content input::placeholder {
+.edit-star-body input::placeholder {
   color: #94a3b8;
   font-style: italic;
 }
 
-.modal-content input:disabled {
+.edit-star-body input:disabled {
   color: #64748b;
   background: transparent;
   cursor: not-allowed;
 }
 
-.input-icon {
+.edit-star-body .input-icon {
   position: absolute;
   left: 20px;
   top: 50%;
@@ -149,11 +157,11 @@
   pointer-events: none;
 }
 
-.input-wrapper.disabled .input-icon {
+.edit-star-body .input-wrapper.disabled .input-icon {
   color: #64748b;
 }
 
-.input-hint {
+.edit-star-body .input-hint {
   font-size: 0.85rem;
   color: #64748b;
   margin-top: 6px;
@@ -161,42 +169,8 @@
   font-style: italic;
 }
 
-.preview-section {
-  margin-top: 40px;
-  padding-top: 25px;
-  border-top: 1px dashed #e2e8f0;
-}
-
-.preview-section h3 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #334155;
-  margin-bottom: 15px;
-  font-size: 1.1rem;
-}
-
-.preview-placeholder {
-  background: #f1f5f9;
-  border-radius: 12px;
-  padding: 40px 20px;
-  text-align: center;
-  border: 2px dashed #cbd5e1;
-  color: #64748b;
-}
-
-.preview-placeholder i {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  color: #94a3b8;
-}
-
-.preview-placeholder p {
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-.modal-footer {
+/* -- Footer --------------------------- */
+.edit-star-footer {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
@@ -205,7 +179,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.btn {
+.edit-star-footer .btn {
   padding: 14px 28px;
   border-radius: 12px;
   font-weight: 600;
@@ -220,51 +194,29 @@
   min-width: 140px;
 }
 
-.save-btn {
+.edit-star-footer .save-btn {
   background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.save-btn:hover {
+.edit-star-footer .save-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.save-btn:active {
+.edit-star-footer .save-btn:active {
   transform: translateY(0);
 }
 
-.cancel-btn {
+.edit-star-footer .cancel-btn {
   background: white;
   color: #64748b;
   border: 2px solid #e2e8f0;
 }
 
-.cancel-btn:hover {
+.edit-star-footer .cancel-btn:hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
   color: #475569;
-}
-
-.modal-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
 }

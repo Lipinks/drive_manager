@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddStarDialog from './AddStarDialog/AddStarDialog';
+import * as storage from '../../utils/storage';
 import './StarManager.css';
 
 const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, stars }) => {
@@ -16,7 +17,7 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
   const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
-    setAvailableTags(localStorage.getItem('tags') ? JSON.parse(localStorage.getItem('tags')) : []);
+    setAvailableTags(storage.getItem(storage.KEYS.TAGS, []));
   }, []);
 
   const handleInputChange = (e) => {
@@ -49,7 +50,7 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
       var updatedTags = [...availableTags, trimmedTag];
       setAvailableTags(updatedTags);
       
-      localStorage.setItem('tags', JSON.stringify(updatedTags));
+      storage.setItem(storage.KEYS.TAGS, updatedTags);
       
       setNewStar(prev => ({
         ...prev,
@@ -93,9 +94,9 @@ const StarManager = ({showAddStarModal, closeAddStarModal, updateStarDetails, st
       var newStars = stars.filter((_, i) => i !== index);
       updateStarDetails(newStars);
       //also delete videos associated with this star
-      var favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+      var favorites = storage.getItem(storage.KEYS.FAVORITES, {});
       delete favorites[star.Name.toLowerCase()];
-      localStorage.setItem('favorites', JSON.stringify(favorites));
+      storage.setItem(storage.KEYS.FAVORITES, favorites);
     }
   };
 

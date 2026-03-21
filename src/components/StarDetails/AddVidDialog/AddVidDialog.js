@@ -2,8 +2,8 @@ import './AddVidDialog.css';
 
 const AddStarDialog = ({ newFavorite, setNewFavorite, handleAddFavorite, setShowVidAddModal }) => {
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="add-vid-overlay">
+      <div className="add-vid-dialog">
         <h2 className='add_new_video_text'>Add New Video</h2>
         <div className="input-label">
           <i className="fas fa-tag"></i>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AddVidDialog from './AddVidDialog/AddVidDialog';
-import StarHeader from './StarHeader/StarHeader';
 import EditStarDialog from './EditStarDialog/EditStarDialog';
 import VideosPage from '../VideosPage/VideosPage';
+import * as storage from '../../utils/storage';
 import './StarDetails.css';
 
 const StarDetails = ({ stars = [], onStarsUpdate }) => {
@@ -33,16 +33,15 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    var allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-    var starFavorites = allFavorites[starName] || [];
-    setFavorites(starFavorites);
-  }, [starName]);
+    var allFavorites = storage.getItem(storage.KEYS.FAVORITES, {});
+    setFavorites(allFavorites[starName] || []);
 
-  useEffect(() => {
-    // Load tags for this star (tags stored as object keyed by star name)
-    var allTags = JSON.parse(localStorage.getItem('tags')) || {};
+    var allTags = storage.getItem(storage.KEYS.TAGS, {});
     var starTags = Array.isArray(allTags[starName]) ? allTags[starName] : [];
     setTags(starTags);
+
+    var globalTags = storage.getItem(storage.KEYS.TAGS, []);
+    setAvailableTags(Array.isArray(globalTags) ? globalTags : []);
   }, [starName]);
 
   useEffect(() => {
@@ -56,13 +55,6 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
       setEditedStar(prev => ({ ...prev, Tags: [] }));
     }
   }, [star]);
-
-  // load available tags (global list) from localStorage
-  useEffect(() => {
-    // Load global tags from localStorage (used by stars)
-    var globalTags = JSON.parse(localStorage.getItem('tags')) || [];
-    setAvailableTags(Array.isArray(globalTags) ? globalTags : []);
-  }, []);
 
   // Handlers for tag-section (selected/available/create)
   const handleAddTagToStar = (tag) => {
@@ -93,7 +85,7 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     // add to global available tags if not present
     setAvailableTags(prevAvail => {
       var updatedAvail = prevAvail.includes(v) ? prevAvail : [...prevAvail, v];
-      localStorage.setItem('tags', JSON.stringify(updatedAvail));
+      storage.setItem(storage.KEYS.TAGS, updatedAvail);
       return updatedAvail;
     });
     // also add to the current star selection
@@ -109,9 +101,9 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
   };
 
   const saveTagsToStorage = (updatedTags, targetStarName = starName) => {
-    var allTags = JSON.parse(localStorage.getItem('tags')) || {};
+    var allTags = storage.getItem(storage.KEYS.TAGS, {});
     allTags[targetStarName] = updatedTags;
-    localStorage.setItem('tags', JSON.stringify(allTags));
+    storage.setItem(storage.KEYS.TAGS, allTags);
     
     setTags(updatedTags);
   };
@@ -129,13 +121,13 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     updatedStars[starIndex] = editedStar;
     onStarsUpdate(updatedStars);
     console.log('Star edited:', editedStar);
-    localStorage.setItem('stars', JSON.stringify(updatedStars));
+    storage.setItem(storage.KEYS.STARS, updatedStars);
     // migrate tags if name changed
     if (editedStar.Name && editedStar.Name !== star.Name) {
-      var allTags = JSON.parse(localStorage.getItem('tags')) || {};
+      var allTags = storage.getItem(storage.KEYS.TAGS, {});
       allTags[editedStar.Name] = allTags[star.Name] || tags || [];
       delete allTags[star.Name];
-      localStorage.setItem('tags', JSON.stringify(allTags));
+      storage.setItem(storage.KEYS.TAGS, allTags);
     } else {
       // save tags under current name
       saveTagsToStorage(tags, editedStar.Name || starName);
@@ -167,9 +159,9 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
     };
 
     var updatedFavorites = [...favorites, favorite];
-    var currentFavs = JSON.parse(localStorage.getItem('favorites') || '{}');
+    var currentFavs = storage.getItem(storage.KEYS.FAVORITES, {});
     currentFavs[starName] = updatedFavorites;
-    localStorage.setItem('favorites', JSON.stringify(currentFavs));
+    storage.setItem(storage.KEYS.FAVORITES, currentFavs);
     setFavorites(updatedFavorites);
     setNewFavorite({ name: '', imageUrl: '', url: '', tags: [] });
     setShowVidAddModal(false);
@@ -206,13 +198,11 @@ const StarDetails = ({ stars = [], onStarsUpdate }) => {
           setShowVidAddModal={setShowVidAddModal} />
       )}
 
-      <StarHeader 
-        star={star}
-        setShowVidEditModal={setShowVidEditModal}
-        setShowVidAddModal={setShowVidAddModal} 
-      />
       <VideosPage 
         starName={star.Name}
+        starImage={star.Image_Link}
+        onAddVideo={() => setShowVidAddModal(true)}
+        onEditStar={() => setShowVidEditModal(true)}
       />
     </div>
   );

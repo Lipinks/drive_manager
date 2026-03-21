@@ -1,16 +1,15 @@
-import '../../StarManager/AddStarDialog/AddStarDialog.css';
 import './EditStarDialog.css';
 
 const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowVidEditModal, handleAddTagToStar, handleRemoveTagFromStar, availableTags, newTag, setNewTag, handleCreateNewTag, handleKeyPress}) => {
   return (
-      <div className="modal-overlay">
-        <div className="modal-container">
-          <div className="modal-header">
+      <div className="edit-star-overlay">
+        <div className="edit-star-dialog">
+          <div className="edit-star-header">
             <h2><i className="fas fa-user-edit"></i> Edit Star Profile</h2>
             <div className="header-decoration"></div>
           </div>
           
-          <div className="modal-content">
+          <div className="edit-star-body">
             <div className="input-group">
               <div className="input-label">
                 <i className="fas fa-tag"></i>
@@ -54,7 +53,7 @@ const EditStarDialog = ({editedStar, handleInputChange, handleEditSave, setShowV
             
           </div>
           
-          <div className="modal-footer">
+          <div className="edit-star-footer">
             <button className="btn cancel-btn" onClick={() => setShowVidEditModal(false)}>
               <i className="fas fa-times"></i>
               Cancel

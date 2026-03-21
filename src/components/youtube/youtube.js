@@ -1,5 +1,6 @@
 import './youtube.css';
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import * as storage from '../../utils/storage';
 
 // Extract video ID from YouTube embed URL
 const getVideoId = (url) => {
@@ -16,9 +17,9 @@ const VideoCard = memo(({ url, index, onDelete }) => {
     : null;
 
   return (
-    <div className="video-card">
+    <div className="yt-video-card">
       <button
-        className="delete-button"
+        className="yt-delete-btn"
         onClick={() => onDelete(index)}
         title="Delete video"
         aria-label={`Delete video ${index + 1}`}
@@ -57,15 +58,15 @@ const VideoCard = memo(({ url, index, onDelete }) => {
 
 // Memoized Delete Confirmation Modal
 const DeleteModal = memo(({ onCancel, onConfirm }) => (
-  <div className="modal-overlay">
-    <div className="modal">
+  <div className="yt-delete-overlay">
+    <div className="yt-delete-modal">
       <h3>Confirm Delete</h3>
       <p>Are you sure you want to delete this video?</p>
-      <div className="modal-buttons">
-        <button onClick={onCancel} className="cancel-button">
+      <div className="yt-delete-buttons">
+        <button onClick={onCancel} className="yt-cancel-btn">
           Cancel
         </button>
-        <button onClick={onConfirm} className="confirm-delete-button">
+        <button onClick={onConfirm} className="yt-confirm-btn">
           Delete
         </button>
       </div>
@@ -83,12 +84,9 @@ export default function YoutubePage() {
   // Load videos from localStorage on mount
   useEffect(() => {
     try {
-      const storedVideos = localStorage.getItem('youtube');
-      if (storedVideos) {
-        const parsed = JSON.parse(storedVideos);
-        if (Array.isArray(parsed)) {
-          setVideos(parsed);
-        }
+      const storedVideos = storage.getItem(storage.KEYS.YOUTUBE, null);
+      if (storedVideos && Array.isArray(storedVideos)) {
+        setVideos(storedVideos);
       }
     } catch (e) {
       console.error('Error loading videos:', e);
@@ -143,7 +141,7 @@ export default function YoutubePage() {
 
     setVideos(prev => {
       const updatedVideos = [...prev, extractedUrl];
-      localStorage.setItem('youtube', JSON.stringify(updatedVideos));
+      storage.setItem(storage.KEYS.YOUTUBE, updatedVideos);
       return updatedVideos;
     });
     
@@ -167,7 +165,7 @@ export default function YoutubePage() {
 
     setVideos(prev => {
       const updatedVideos = prev.filter((_, i) => i !== deleteIndex);
-      localStorage.setItem('youtube', JSON.stringify(updatedVideos));
+      storage.setItem(storage.KEYS.YOUTUBE, updatedVideos);
       return updatedVideos;
     });
     
@@ -189,7 +187,7 @@ export default function YoutubePage() {
     }
 
     return (
-      <div className="videos-grid">
+      <div className="yt-videos-grid">
         {videos.map((url, index) => (
           <VideoCard
             key={`${url}-${index}`}

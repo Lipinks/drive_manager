@@ -1,19 +1,21 @@
+import * as storage from '../utils/storage';
+
 const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your client ID
 const CLIENT_SECRET = 'YOUR_CLIENT_SECRET'; // Replace with your client secret (for server-side) or leave empty for SPA
 
-export const getAccessToken = () => localStorage.getItem('accessToken');
-export const getRefreshToken = () => localStorage.getItem('refreshToken');
+export const getAccessToken = () => storage.getRaw(storage.KEYS.ACCESS_TOKEN);
+export const getRefreshToken = () => storage.getRaw(storage.KEYS.REFRESH_TOKEN);
 
 export const setTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('accessToken', accessToken);
+  storage.setRaw(storage.KEYS.ACCESS_TOKEN, accessToken);
   if (refreshToken) {
-    localStorage.setItem('refreshToken', refreshToken);
+    storage.setRaw(storage.KEYS.REFRESH_TOKEN, refreshToken);
   }
 };
 
 export const clearTokens = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  storage.removeItem(storage.KEYS.ACCESS_TOKEN);
+  storage.removeItem(storage.KEYS.REFRESH_TOKEN);
 };
 
 export const refreshAccessToken = async () => {

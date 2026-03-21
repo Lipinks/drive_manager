@@ -1,5 +1,6 @@
 import * as driveService from './driveService';
 import { withTokenRefresh } from './authService';
+import * as storage from '../utils/storage';
 
 const FILES = {
   STAR: 'star.json',
@@ -19,16 +20,16 @@ export const saveStarFile = async (accessToken) => {
   return withTokenRefresh(async (token) => {
     try {
       // Get raw stars array from localStorage
-      const stars = JSON.parse(localStorage.getItem('stars') || '[]');
+      const stars = storage.getItem(storage.KEYS.STARS, []);
       
       // Ensure it's a plain array, not a nested object
       const starsArray = Array.isArray(stars) ? stars : 
                         (stars?.stars ? stars.stars : []);
 
       await saveFile(token, FILES.STAR, starsArray);
-      await saveFile(token, FILES.FAVORITES, JSON.parse(localStorage.getItem('favorites')));
-      await saveFile(token, FILES.TAGS, JSON.parse(localStorage.getItem('tags')));
-      await saveFile(token, FILES.YOUTUBE, JSON.parse(localStorage.getItem('youtube')));
+      await saveFile(token, FILES.FAVORITES, storage.getItem(storage.KEYS.FAVORITES, {}));
+      await saveFile(token, FILES.TAGS, storage.getItem(storage.KEYS.TAGS, []));
+      await saveFile(token, FILES.YOUTUBE, storage.getItem(storage.KEYS.YOUTUBE, []));
     } catch (error) {
       console.error('Save error:', error);
       throw error;
@@ -123,9 +124,9 @@ export const fetchStarFile = async (accessToken) => {
 
       // Store normalized data in localStorage
       stars.sort();
-      localStorage.setItem('favorites', JSON.stringify(favoritesData || {}));
-      localStorage.setItem('tags', JSON.stringify(tagsData || []));
-      localStorage.setItem('youtube', JSON.stringify(youtubeData || []));
+      storage.setItem(storage.KEYS.FAVORITES, favoritesData || {});
+      storage.setItem(storage.KEYS.TAGS, tagsData || []);
+      storage.setItem(storage.KEYS.YOUTUBE, youtubeData || []);
 
       return stars;
     } catch (error) {
@@ -137,14 +138,14 @@ export const fetchStarFile = async (accessToken) => {
 
 export const editStar = async (starId, updatedData) => {
   try {
-    const stars = JSON.parse(localStorage.getItem('stars') || '[]');
+    const stars = storage.getItem(storage.KEYS.STARS, []);
     const starsArray = Array.isArray(stars) ? stars : (stars?.stars ? stars.stars : []);
     
     const updatedStars = starsArray.map(star => 
       star.id === starId ? { ...star, ...updatedData } : star
     );
     console.log('Updated stars array:', updatedStars);
-    localStorage.setItem('stars', JSON.stringify(updatedStars));
+    storage.setItem(storage.KEYS.STARS, updatedStars);
     return updatedStars;
   } catch (error) {
     console.error('Edit star error:', error);
@@ -158,10 +159,10 @@ export const syncWithDrive = async (accessToken) => {
       if (!token) throw new Error('Missing access token');
 
       // safe parse with defaults
-      const starsRaw = JSON.parse(localStorage.getItem('stars') || '[]');
-      const favoritesRaw = JSON.parse(localStorage.getItem('favorites') || '{}');
-      const tagsRaw = JSON.parse(localStorage.getItem('tags') || '[]');
-      const youtubeLinks = JSON.parse(localStorage.getItem('youtube') || '[]');
+      const starsRaw = storage.getItem(storage.KEYS.STARS, []);
+      const favoritesRaw = storage.getItem(storage.KEYS.FAVORITES, {});
+      const tagsRaw = storage.getItem(storage.KEYS.TAGS, []);
+      const youtubeLinks = storage.getItem(storage.KEYS.YOUTUBE, []);
 
       // validate data
 
